@@ -1,0 +1,16 @@
+.zooport {
+    &__version-info {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 5px;
+        color: $color-base-white;
+        transition: all $animation-duration-base;
+        border: solid 0 $color-pastel-violet;
+        border-bottom-width: 8px;
+
+        &.--hidden {
+            transform: translateX(100%);
+        }
+    }
+}

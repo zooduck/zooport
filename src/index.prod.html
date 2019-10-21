@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="zooduck">
+        <title>ZOODUCK - JavaScript UI Developer</title>
+        <!-- https://github.com/webcomponents/polyfills/tree/master/packages/webcomponentsjs -->
+        <!-- <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script> -->
+        <script src="zooport-2019.js" defer></script>
+        <link rel="stylesheet" href="zooport-2019.css">
+    </head>
+    <body>
+        <div id="zooport" class="zooport">
+            <div class="zooport__header"></div>
+
+            <div class="zooport__filter --hidden">
+                <zoo-input label="Filter content..."></zoo-input>
+            </div>
+
+            <div class="zooport__content-container">
+                <div class="zooport__content-container-content">NO_CONTENT</div>
+            </div>
+
+            <div class="zooport__version-info --hidden">0.0.0</div>
+
+            <footer class="zooport__footer --hidden">
+                <div class="zooport__footer-supported-browsers">
+                    <span>Supported browsers:&nbsp;</span>
+                    <i class="fab fa-chrome"></i>&nbsp;<i class="fab fa-firefox"></i>
+                </div>
+                <span class="zooport__footer-please-browse-responsibly">
+                    <span>Please browse responsibly.</span>
+                    <span>Always use a browser that works.</span>
+                    <span>Never use Internet Explorer or Edge.</span>
+                </span>
+            </footer>
+        </div>
+    </body>
+</html>

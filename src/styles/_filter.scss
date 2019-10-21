@@ -1,0 +1,13 @@
+.zooport {
+    &__filter {
+        display: flex;
+        justify-content: flex-end;
+        margin: 10px;
+        transition: all $animation-duration-base;
+
+        &.--hidden {
+            transform: translateX(100%);
+            height: 0;
+        }
+    }
+}
