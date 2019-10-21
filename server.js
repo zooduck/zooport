@@ -15,6 +15,7 @@ server.use(bodyParser.urlencoded({ extended: true }));
 router(server);
 
 server.listen(config.port, () => {
+    // eslint-disable-next-line no-console
     console.log(`Listening on port: ${config.port}...`);
     // Object.keys(process.env).forEach((environmentVar) => console.log(`process.env.${environmentVar} = ${process.env[environmentVar]}`));
 });

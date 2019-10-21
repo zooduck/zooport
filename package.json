@@ -25,6 +25,8 @@
     "dotenv": "^8.1.0",
     "eslint": "^6.5.1",
     "express": "^4.17.1",
+    "express-graphql": "^0.9.0",
+    "graphql": "^14.5.8",
     "jest": "^24.9.0",
     "jest-puppeteer": "^4.3.0",
     "postcss-modules": "^1.4.1",
