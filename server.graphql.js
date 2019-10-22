@@ -1,53 +1,47 @@
+/* eslint-disable no-console */
 const dotenv = require('dotenv');
 dotenv.config();
 const express = require('express');
 const expressGraphql = require('express-graphql');
 const { buildSchema } = require('graphql');
-
-const testData = [
-    { id: 1, name: 'Begemotik', size: 'bolshoye' },
-    { id: 2, name: 'Homyachok', size: 'malenky' },
-    { id: 3, name: 'Slonyonok', size: 'bolshoye' },
-    { id: 4, name: 'Obezyanka', size: 'malenky' }
-];
-
-const schema = buildSchema(`
-    type Query {
-        animal(id: Int!): Animal,
-        animalsBySize(size: String): [Animal]
-    },
-    type Animal {
-        id: Int,
-        name: String,
-        size: String
-    }
-`);
-
-const getAnimal = (args) => {
-    const result = testData.find(item => item.id === args.id);
-
-    return result;
-};
-
-const getAnimalsBySize = (args) => {
-    if (!args.size) {
-        return testData;
-    }
-    const result = testData.filter(item => item.size === args.size);
-
-    return result;
-};
-
-const rootValue = {
-    animal: getAnimal,
-    animalsBySize: getAnimalsBySize,
-};
-
+const fs = require('fs');
+const path = require('path');
+const database = require('./db/database')();
 const server = express();
-server.use('/graphql', expressGraphql({
-    schema,
-    rootValue,
-    graphiql: true,
-}));
-// eslint-disable-next-line no-console
-server.listen(8080, () => console.log('Node GraphQL Server running on localhost:8080/graphql'));
+const bodyParser = require('body-parser');
+const router = require('./routes/routes.js');
+
+server.use(express.static('dist'));
+server.use(bodyParser.json());
+server.use(bodyParser.urlencoded({ extended: true }));
+
+router(server);
+
+let db, resolvers;
+const typeDefs = fs.readFileSync(path.join(__dirname, 'db/schema.graphql'), 'utf-8');
+const schema = buildSchema(typeDefs);
+
+database.connect().then((result) => {
+    db = result;
+    resolvers = require('./db/resolvers')(db);
+    console.log(`MongoDB connection to the ${db.databaseName} database was successful`);
+
+    server.use('/graphql', expressGraphql({
+        schema,
+        rootValue: resolvers,
+        graphiql: true,
+    }));
+
+}).catch((err) => {
+    console.error(err);
+});
+
+
+const serverConfig = {
+    port: 8080,
+};
+
+server.listen(serverConfig.port, () => {
+    console.log(`Server running on http://localhost:${serverConfig.port}`)
+    console.log(`GraphQL can be accessed on http://localhost:${serverConfig.port}/graphql`);
+});

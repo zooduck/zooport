@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --verbose",
-    "prestart": "node clean && npm run lint",
+    "prestart": "node clean",
     "start": "parcel watch src/index.html",
     "prebuild": "node clean && node copy ./src/index.prod.html ./dist/index.html && npm run lint",
-    "build": "parcel build src/index.js --out-file zooport-2019.js",
+    "build": "parcel build src/index.ts --out-file zooport-2019.js",
     "lint": "eslint ./src/**/*"
   },
   "author": "zooduck",
@@ -37,6 +37,8 @@
   },
   "dependencies": {
     "@webcomponents/webcomponentsjs": "^2.3.0",
+    "bcrypt": "^3.0.6",
+    "mongodb": "^3.3.3",
     "scripts": "^0.1.0"
   }
 }

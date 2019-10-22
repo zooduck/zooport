@@ -1,0 +1,10 @@
+type Animal {
+    id: Int,
+    name: String,
+    size: String
+}
+
+type Query {
+    animal(id: Int!): Animal,
+    animals(size: String): [Animal]
+}
