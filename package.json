@@ -4,7 +4,7 @@
   "description": "portfolio site project 2019",
   "main": "index.js",
   "scripts": {
-    "test": "jest --verbose",
+    "test": "jest --verbose --coverage",
     "prestart": "node clean",
     "start": "parcel watch src/index.html",
     "prebuild": "node clean && node copy ./src/index.prod.html ./dist/index.html && npm run lint",
@@ -14,6 +14,7 @@
   "author": "zooduck",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.6.4",
     "@babel/preset-env": "^7.6.3",
     "@babel/preset-typescript": "^7.6.0",
     "@fortawesome/fontawesome-free": "^5.11.2",

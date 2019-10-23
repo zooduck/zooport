@@ -2,7 +2,6 @@
 import 'regenerator-runtime/runtime'; // required for async/await to work with babel7+
 import { siteInfo, ZooHeader, versionScramble, wait } from './utils/index';
 import { graphqlConfig } from './config/index';
-import './zooduck-web-components';
 
 const loadIntro = async () => {
     const delayBetweenTransitions = 500;
