@@ -3,6 +3,10 @@ import { style } from './zoo-input.style';
 
 export class HTMLZooInputElement extends HTMLElement {
     _autocomplete: boolean;
+    _booleanAttrs = [
+        'autocomplete',
+        'noicons'
+    ];
     _label: string;
     _noicons: boolean;
     _placeholder: string;
@@ -96,7 +100,7 @@ export class HTMLZooInputElement extends HTMLElement {
     }
 
     private _isBooleanAttr(attr: string): boolean {
-        return /(noicons|autocomplete)/.test(attr);
+        return this._booleanAttrs.includes(attr);
     }
 
     private _setup() {
