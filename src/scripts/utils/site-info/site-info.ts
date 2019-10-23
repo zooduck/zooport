@@ -8,5 +8,5 @@ export const siteInfo = (() => {
                 return version;
             })();
         }
-    }
+    };
 })();

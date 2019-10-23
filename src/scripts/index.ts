@@ -24,7 +24,7 @@ const loadIntro = async () => {
     document.querySelector('.zooport__footer').addEventListener('click', function() {
         this.classList.toggle('--minified');
     });
-}
+};
 
 loadIntro();
 

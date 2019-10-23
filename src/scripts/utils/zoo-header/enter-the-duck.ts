@@ -1,4 +1,4 @@
-import { style, classes } from "./enter-the-duck.style";
+import { style, classes } from './enter-the-duck.style';
 
 export class EnterTheDuck {
     private _ANIMATION_DELAY_INITIAL = 0;

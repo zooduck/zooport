@@ -22,6 +22,18 @@ module.exports = {
     ],
     "rules": {
         "no-trailing-spaces": "error",
-        "no-console": "error"
-    },
+        "no-console": "error",
+        "indent": [
+            "error",
+            4
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ]
+    }
 };
