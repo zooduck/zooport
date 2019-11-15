@@ -1,0 +1,51 @@
+export const skydiveCentres = [
+    {
+        club: 'Skydive Langar',
+        latitude: 52.889805,
+        location: 'Langar, Nottinghamshire, UK',
+        longitude: -0.906808,
+        site: 'https://skydivelangar.co.uk',
+    },
+    {
+        club: 'North London Skydiving Centre',
+        latitude: 52.487691,
+        location: 'Chatteris, UK',
+        longitude: 0.088212,
+        site: 'https://ukskydiving.com',
+    },
+    {
+        club: 'Skydive Headcorn',
+        latitude: 51.154044,
+        location: 'Headcorn, Ashford, UK',
+        longitude: 0.645511,
+        site: 'https://headcorn.com',
+    },
+    {
+        club: 'Army Parachute Association',
+        latitude: 51.245641,
+        location: 'Netheravon, Salisbury, UK',
+        longitude: -1.760713,
+        site: 'https://netheravon.com',
+    },
+    {
+        club: 'London Parachute School (LPS)',
+        latitude: 51.552760,
+        location: 'Chiltern Park Aerodrome, Ipsden, UK',
+        longitude: -1.100669,
+        site: 'https://skydivinglondon.com',
+    },
+    {
+        club: 'Skydive Hibaldstow',
+        latitude: 53.500222,
+        location: 'Hibaldstow Airfield, UK',
+        longitude: -0.523414,
+        site: 'https://skydiving.co.uk',
+    },
+    {
+        club: 'UK Parachuting',
+        latitude: 52.555305,
+        location: 'Sibson Airfield, Peterborough, UK',
+        longitude: -0.390292,
+        site: 'https://skydivesibson.co.uk',
+    },
+];
