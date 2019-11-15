@@ -1,9 +1,10 @@
 .zooport {
     &__filter {
+        padding: 10px;
         display: flex;
         justify-content: flex-end;
-        margin: 10px;
         transition: all $animation-duration-base;
+        background-color: $background-color-base;
 
         &.--hidden {
             transform: translateX(100%);
