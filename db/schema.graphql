@@ -1,3 +1,59 @@
+type DarkSkyDataDaily {
+    summary: String,
+    icon: String,
+    data: [DarkSkyDataDailyData]
+}
+
+type DarkSkyData {
+    latitude: Float,
+    longitude: Float,
+    timezone: String,
+    offset: Int,
+    daily: DarkSkyDataDaily
+}
+
+type DarkSkyDataDailyData {
+    apparentTemperatureHigh: Float,
+    apparentTemperatureHighTime: Int,
+    apparentTemperatureLow: Float,
+    apparentTemperatureLowTime: Int,
+    apparentTemperatureMax: Float,
+    apparentTemperatureMaxTime: Int,
+    apparentTemperatureMin: Float,
+    apparentTemperatureMinTime: Int,
+    cloudCover: Float,
+    dewPoint: Float,
+    humidity: Float,
+    icon: String,
+    moonPhase: Float,
+    ozone: Float,
+    precipIntensity: Float,
+    precipIntensityMax: Float,
+    precipIntensityMaxTime: Int,
+    precipProbability: Float,
+    precipType: String,
+    pressure: Float,
+    summary: String,
+    sunriseTime: Int,
+    sunsetTime: Int,
+    temperatureHigh: Float,
+    temperatureHighTime: Int,
+    temperatureLow: Float,
+    temperatureLowTime: Int,
+    temperatureMax: Float,
+    temperatureMaxTime: Int,
+    temperatureMin: Float,
+    temperatureMinTime: Int,
+    time: Int,
+    uvIndex: Int,
+    uvIndexTime: Int,
+    visibility: Float,
+    windBearing: Int,
+    windGust: Float,
+    windGustTime: Int,
+    windSpeed: Float
+}
+
 type Animal {
     id: Int,
     name: String,
@@ -6,5 +62,6 @@ type Animal {
 
 type Query {
     animal(id: Int!): Animal,
-    animals(size: String): [Animal]
+    animals(size: String): [Animal],
+    weather(latitude: Float, longitude: Float): DarkSkyData
 }

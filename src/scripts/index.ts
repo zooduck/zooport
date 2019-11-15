@@ -2,6 +2,7 @@
 import 'regenerator-runtime/runtime'; // required for async/await to work with babel7+
 import { siteInfo, ZooHeader, versionScramble, wait } from './utils/index';
 import { graphqlConfig } from './config/index';
+import { SkydiveWeather, SkyduckWeather } from './utils/skydive-weather/index';
 
 const loadIntro = async () => {
     const delayBetweenTransitions = 500;
@@ -76,3 +77,23 @@ getAnimals();
 getAnimalById(2);
 getAnimalById(3);
 // \\ Test GraphQL + MongoDB
+
+// ==================================================
+// Open Weather Map API (100 free requests per day)
+// ==================================================
+const skydiveWeather = new SkydiveWeather();
+console.log(skydiveWeather);
+// (async () => {
+//     const skydiveWeatherExampleA = await skydiveWeather.getForecastLocation('Chatteris,UK');
+//     const skydiveWeatherExampleB = await skydiveWeather.getForeCastLatLong(52.487702, 0.088072);
+//     console.log(skydiveWeatherExampleA, skydiveWeatherExampleB);
+// })();
+
+// ===================================================
+// Dark Sky Weather API (1000 free requests per day)
+// ===================================================
+const skyduckWeather = new SkyduckWeather();
+console.log(skyduckWeather);
+skyduckWeather.getDailyForecast('lps').then((result) => {
+    console.log('SkyyduckWeather "lps":', result);
+});

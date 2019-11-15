@@ -36,12 +36,11 @@ database.connect().then((result) => {
     console.error(err);
 });
 
-
 const serverConfig = {
     port: 8080,
 };
 
 server.listen(serverConfig.port, () => {
-    console.log(`Server running on http://localhost:${serverConfig.port}`)
+    console.log(`Server running on http://localhost:${serverConfig.port}`);
     console.log(`GraphQL can be accessed on http://localhost:${serverConfig.port}/graphql`);
 });
