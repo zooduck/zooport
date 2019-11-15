@@ -95,5 +95,5 @@ console.log(skydiveWeather);
 const skyduckWeather = new SkyduckWeather();
 console.log(skyduckWeather);
 skyduckWeather.getDailyForecast('lps').then((result) => {
-    console.log('SkyyduckWeather "lps":', result);
+    console.log('SkyduckWeather "lps":', result);
 });
