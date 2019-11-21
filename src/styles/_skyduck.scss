@@ -1,7 +1,16 @@
 .skyduck-weather-forecasts {
     display: grid;
     @media (min-width: 768px) {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        skyduck-weather {
+            width: 360px;
+
+            &:not(:first-of-type) {
+                margin-left: 10px;
+            }
+        }
     }
 }

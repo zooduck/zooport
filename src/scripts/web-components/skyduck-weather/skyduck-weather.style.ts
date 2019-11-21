@@ -68,11 +68,6 @@ export const style = `
     grid-column-start: 1;
     grid-column-end: span 6;
 }
-@media (min-width: 768px) {
-    .skyduck-weather__map {
-        height: 300px;
-    }
-}
 .skyduck-weather__place {
     display: flex;
     flex-direction: column;
