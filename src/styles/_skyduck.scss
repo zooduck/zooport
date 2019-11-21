@@ -1,0 +1,7 @@
+.skyduck-weather-forecasts {
+    display: grid;
+    @media (min-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+}

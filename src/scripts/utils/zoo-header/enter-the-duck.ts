@@ -24,7 +24,6 @@ export class EnterTheDuck {
     private _addBlocksToDOM(): void {
         const blocksContainerEl = document.createElement('div');
         blocksContainerEl.classList.add(...this._classes.blockContainer);
-        blocksContainerEl.style.animationDuration = `${this._currentAnimationDelay + this._longestAnimationDuration}ms`;
 
         this._blocks.forEach(el => blocksContainerEl.appendChild(el));
         this._headerEl.appendChild(blocksContainerEl);
@@ -39,8 +38,6 @@ export class EnterTheDuck {
             animationDelay: this._currentAnimationDelay,
             backgroundColor: this._randomBackgroundColor,
         };
-
-        this._currentAnimationDelay += 250;
 
         if (config.animationDuration > this._longestAnimationDuration) {
             this._longestAnimationDuration = config.animationDuration;
@@ -60,11 +57,16 @@ export class EnterTheDuck {
 
     private _buildBlocks(chars: string): Promise<any> {
         this._reset();
-        chars.split('').forEach(char => this._blocks.push(this._buildBlock(char)));
+        chars.split('').forEach((char, i) => {
+            if (i > 0) {
+                this._currentAnimationDelay += 250;
+            }
+            this._blocks.push(this._buildBlock(char));
+        });
         this._addBlocksToDOM();
 
         return new Promise((res) => {
-            setTimeout(() => res(), this._currentAnimationDelay + this._longestAnimationDuration - 500);
+            setTimeout(() => res(), this._currentAnimationDelay + this._longestAnimationDuration);
         });
     }
 
@@ -104,8 +106,8 @@ export class EnterTheDuck {
     }
 
     private _calcAnimationDuration(): number {
-        const minDuration = 1500;
-        const maxDuration = 2500;
+        const minDuration = 1000;
+        const maxDuration = 2000;
         const duration = Math.ceil(Math.random() * maxDuration);
 
         return duration > minDuration ? duration : minDuration;
@@ -117,7 +119,7 @@ export class EnterTheDuck {
     }
 
     private async _consoleLogToScreen(txt: string): Promise<any> {
-        let delay = 500;
+        let delay = 2000;
         const delayIncrement = 50;
 
         const chars = this._buildConsoleLogChars(txt, delay, delayIncrement);
@@ -177,7 +179,7 @@ export class EnterTheDuck {
     }
 
     public async run(title = 'ZOODUCK', subtitle = 'JavaScript UI Developer'): Promise<void> {
-        await this._buildBlocks(title);
+        this._buildBlocks(title);
         await this._consoleLogToScreen(subtitle);
 
         return;

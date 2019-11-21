@@ -16,7 +16,8 @@ const resolvers = (db) => {
         async weather(args) {
             const result = await axios.get(`https://api.darksky.net/forecast/${process.env.DARKSKY_SECRET}/${args.latitude || '0'},${args.longitude || '0'}`, {
                 params: {
-                    exclude: 'currently,minutely,hourly,alerts,flags',
+                    exclude: 'currently,minutely,alerts,flags',
+                    extend: 'hourly',
                     lang: 'en',
                     units: 'uk2',
                 }

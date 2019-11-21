@@ -15,7 +15,7 @@ server.use(express.static('dist'));
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
 
-router(server);
+
 
 let db, resolvers;
 const typeDefs = fs.readFileSync(path.join(__dirname, 'db/schema.graphql'), 'utf-8');
@@ -32,9 +32,13 @@ database.connect().then((result) => {
         graphiql: true,
     }));
 
+    router(server, db);
+
 }).catch((err) => {
     console.error(err);
 });
+
+
 
 const serverConfig = {
     port: 8080,

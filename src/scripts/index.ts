@@ -2,7 +2,9 @@
 import 'regenerator-runtime/runtime'; // required for async/await to work with babel7+
 import { siteInfo, ZooHeader, versionScramble, wait } from './utils/index';
 import { graphqlConfig } from './config/index';
-import { SkydiveWeather, SkyduckWeather } from './utils/skydive-weather/index';
+import { SkydiveWeather } from './utils/skydive-weather/index';
+import { SkyduckWeather } from './web-components/skyduck-weather/index';
+import './web-components/skyduck-weather/skyduck-weather.component';
 
 const loadIntro = async () => {
     const delayBetweenTransitions = 500;
@@ -19,12 +21,12 @@ const loadIntro = async () => {
 
     document.querySelector('.zooport__filter').classList.remove('--hidden');
 
-    await wait(delayBetweenTransitions);
+    // await wait(delayBetweenTransitions);
 
-    document.querySelector('.zooport__footer').classList.remove('--hidden');
-    document.querySelector('.zooport__footer').addEventListener('click', function() {
-        this.classList.toggle('--minified');
-    });
+    // document.querySelector('.zooport__footer').classList.remove('--hidden');
+    // document.querySelector('.zooport__footer').addEventListener('click', function() {
+    //     this.classList.toggle('--minified');
+    // });
 };
 
 loadIntro();
@@ -78,9 +80,13 @@ getAnimalById(2);
 getAnimalById(3);
 // \\ Test GraphQL + MongoDB
 
-// ==================================================
+// ============================================================
 // Open Weather Map API (100 free requests per day)
-// ==================================================
+// Accepts <latitude,longitude> or <location> as the query
+// Returns latitude and longitude in the response
+// Contrary to the docs, it does NOT return Wind Gust data
+// (This is the main reason I switched to Dark Sky)
+// ============================================================
 const skydiveWeather = new SkydiveWeather();
 console.log(skydiveWeather);
 // (async () => {
@@ -89,11 +95,11 @@ console.log(skydiveWeather);
 //     console.log(skydiveWeatherExampleA, skydiveWeatherExampleB);
 // })();
 
-// ===================================================
+// ======================================================
 // Dark Sky Weather API (1000 free requests per day)
-// ===================================================
+// Accepts ONLY <latitude,longitude> for the query
+// so you have to use a Geocode service (like Bing Maps)
+// if you want to make searches by location query
+// ======================================================
 const skyduckWeather = new SkyduckWeather();
 console.log(skyduckWeather);
-skyduckWeather.getDailyForecast('lps').then((result) => {
-    console.log('SkyduckWeather "lps":', result);
-});

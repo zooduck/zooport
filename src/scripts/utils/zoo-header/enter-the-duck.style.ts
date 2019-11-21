@@ -18,7 +18,7 @@ export const style = `
         transform: translate(0, -80%);
     }
     50% {
-        transform: translate(0, 50%);
+        transform: translate(0, 20%);
     }
     100% {
         transform: translate(0, 0);
@@ -28,20 +28,8 @@ export const style = `
     0% {
         transform: translateX(100%);
     }
-    10% {
-        transform: translateX(0%);
-    }
-    80% {
-        font-size: 55px;
-        transform: translateY(0) rotate(0deg);
-    }
-    85% {
-        font-size: 45px;
-        transform: translateY(2px) rotate(-2deg);
-    }
     100% {
-        transform: translateX(0%) translateY(2px) rotate(-2deg);
-        font-size: 45px;
+        transform: translateX(0%);
     }
 }
 @keyframes rotate45 {
@@ -79,7 +67,8 @@ export const style = `
 .enter-the-duck__header {
     position: relative;
     display: block;
-    height: calc(var(--font-size-title) + 45px);
+    height: calc(var(--font-size-title) * 2);
+    height: calc((var(--font-size-title) * 2) + var(--font-size-subtitle) + 40px);
     padding: 10px;
     background-color: var(--color-base-black);
     overflow: hidden;
@@ -88,7 +77,7 @@ export const style = `
     font-weight: var(--font-weight-base-regular);
 }
 .enter-the-duck__header.--animation-complete {
-    height: calc(var(--font-size-title) + var(--font-size-subtitle) + 80px);
+    height: calc((var(--font-size-title) * 2) + var(--font-size-subtitle) + 40px);
 }
 .enter-the-duck__console-block {
     display: flex;
@@ -119,15 +108,15 @@ export const style = `
 }
 .enter-the-duck__console-block-cursor.--dropped {
     margin-top: calc(var(--font-size-subtitle) * 1.8);
-    transform: rotate(45deg) scale(2.5);
+    transform: rotate(45deg) scale(2.25);
 }
 .enter-the-duck__intro-loading-blocks {
     position: relative;
     display: flex;
-    height: calc(var(--font-size-title) + 40px);
+    height: calc(var(--font-size-title) * 2);
     overflow: hidden;
     transform-origin: left top;
-    animation: introLoadingBlocks both;
+    animation: introLoadingBlocks .5s both;
 }
 .enter-the-duck__intro-loading-block {
     transform: translate(0, -60px);

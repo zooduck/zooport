@@ -5,6 +5,7 @@ const mongodbURI = process.env.MONGODB_URI.replace(/<dbuser>/, process.env.MONGO
 const collections = [
     'user',
     'logbook',
+    'weather',
 ];
 
 const createCollections = async (db) => {
@@ -28,12 +29,13 @@ const mongo = () => {
 
                     await db.collection('user').createIndex({ username: 1}, { unique: true });
                     await db.collection('logbook').createIndex({ jump: 1}, { unique: true });
+                    await db.collection('weather').createIndex({ id: 1}, { unique: true });
 
                     resolve(db);
                 });
             });
         }
-    }
+    };
 };
 
 module.exports = mongo;
