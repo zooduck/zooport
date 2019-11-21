@@ -135,6 +135,10 @@ export const style = `
     margin-top: 20px;
     font-size: 14px;
 }
+.skyduck-weather__daily-data-title {
+    display: flex;
+    grid-column-end: span 2;
+}
 .skyduck-weather__daily-data-date,
 .skyduck-weather__hourly-data-date {
     display: flex;
@@ -170,6 +174,7 @@ export const style = `
     height: 55px;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 }
 .skyduck-weather__daily-data-forecast.--green,
 .skyduck-weather__hourly-data-forecast.--green {

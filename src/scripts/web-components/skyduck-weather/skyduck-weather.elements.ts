@@ -90,7 +90,7 @@ export class SkyduckWeatherElements {
     }
 
     private _buildDay(dailyData: DailyData) {
-        const { icon: dailyDataIcon, cloudCover, windSpeed, windGust, time } = dailyData;
+        const { icon: dailyDataIcon, cloudCover, windSpeed, windGust, time, apparentTemperatureAverage } = dailyData;
         const colorModifiersData: ColorModifiersData = {
             cloudCover,
             windSpeed,
@@ -104,7 +104,7 @@ export class SkyduckWeatherElements {
         const day = new Date(time * 1000).toDateString().substr(0, 3);
 
         const html = `
-            <div style="display: flex; grid-column-end: span 2;" class="${iconData.modifier}">
+            <div class="skyduck-weather__daily-data-title ${iconData.modifier}">
                 <div class="skyduck-weather__daily-data-date ${iconData.modifier}">
                     <span>${day}</span>
                     <span>${date}</span>
@@ -115,31 +115,7 @@ export class SkyduckWeatherElements {
                 </div>
             </div>
 
-            <div class="skyduck-weather__daily-data-forecast ${colorModifiers.cloudCover}">
-                <div>${dailyData.cloudCover}%</div>
-            </div>
-
-            <div class="skyduck-weather__daily-data-forecast ${colorModifiers.windSpeed}">
-                <div style="text-align: center">
-                    <span>${dailyData.windSpeed}<span>
-                    <br>
-                    <small>mph</small>
-                </div>
-            </div>
-
-            <div class="skyduck-weather__daily-data-forecast ${colorModifiers.windGust}">
-                <div style="text-align: center">
-                    <span>${dailyData.windGust}<span>
-                    <br>
-                    <small>mph</small>
-                </div>
-            </div>
-
-            <div class="skyduck-weather__daily-data-forecast ${colorModifiers.temperature}">
-                <div style="text-align: center">
-                    <span>${dailyData.apparentTemperatureAverage}&deg;C<span>
-                </div>
-            </div>
+            ${this._buildForecastItems('daily', colorModifiers, cloudCover, windSpeed, windGust, apparentTemperatureAverage)}
         `;
 
         return html;
@@ -167,6 +143,34 @@ export class SkyduckWeatherElements {
         `, 'text/html').body.firstChild;
 
         return footer as HTMLElement;
+    }
+
+    private _buildForecastItems(
+        type: 'daily' | 'hourly',
+        colorModifiers: ColorModifiers,
+        cloudCover: number,
+        windSpeed: number,
+        windGust: number,
+        temperature: number): string {
+        return `
+        <div class="skyduck-weather__${type}-data-forecast ${colorModifiers.cloudCover}">
+            <span>${cloudCover}%</span>
+        </div>
+
+        <div class="skyduck-weather__${type}-data-forecast ${colorModifiers.windSpeed}">
+            <span>${windSpeed}</span>
+            <small>mph</small>
+        </div>
+
+        <div class="skyduck-weather__${type}-data-forecast ${colorModifiers.windGust}">
+            <span>${windGust}</span>
+            <small>mph</small>
+        </div>
+
+        <div class="skyduck-weather__${type}-data-forecast ${colorModifiers.temperature}">
+            <span>${temperature}&deg;C<span>
+        </div>
+        `;
     }
 
     private _buildGoogleMap(): HTMLIFrameElement {
@@ -223,31 +227,7 @@ export class SkyduckWeatherElements {
                 <i class="fas fa-${icon}"></i>
             </div>
 
-            <div class="skyduck-weather__hourly-data-forecast ${colorModifiers.cloudCover}">
-                <div>${cloudCover}%</div>
-            </div>
-
-            <div class="skyduck-weather__hourly-data-forecast ${colorModifiers.windSpeed}">
-                <div style="text-align: center">
-                    <span>${windSpeed}<span>
-                    <br>
-                    <small>mph</small>
-                </div>
-            </div>
-
-            <div class="skyduck-weather__hourly-data-forecast ${colorModifiers.windGust}">
-                <div style="text-align: center">
-                    <span>${windGust}<span>
-                    <br>
-                    <small>mph</small>
-                </div>
-            </div>
-
-            <div class="skyduck-weather__hourly-data-forecast ${colorModifiers.temperature}">
-                <div style="text-align: center">
-                    <span>${apparentTemperature}&deg;C<span>
-                </div>
-            </div>
+            ${this._buildForecastItems('hourly', colorModifiers, cloudCover, windSpeed, windGust, apparentTemperature)}
         `;
 
         return html;
