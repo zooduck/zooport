@@ -28,6 +28,15 @@ export const style = `
     color: lightgray;
     background-color: #f5f5f5;
 }
+.--green {
+    background-color: rgba(50, 205, 50, .55);
+}
+.--amber {
+    background-color: rgba(255, 165, 0, .55);
+}
+.--red {
+    background-color: rgb(255, 0, 0, .55);
+}
 .skyduck-weather {
     display: grid;
     grid-template-columns: repeat(2, 55px) repeat(3, 1fr) minmax(65px, 1fr);
@@ -59,6 +68,9 @@ export const style = `
     grid-column-start: 1;
     grid-column-end: span 6;
     margin-bottom: 10px;
+}
+.skyduck-weather__title h1 {
+    margin: 0;
 }
 .skyduck-weather__map {
     width: 100%;
@@ -120,6 +132,18 @@ export const style = `
     margin-left: 10px;
     padding: 5px;
     margin: 0 5px;
+    flex-grow: 1;
+}
+.skyduck-weather__daily-data-title-icon {
+    display: flex;
+    margin-left: 10px;
+}
+.skyduck-weather__daily-data-title-temperature {
+    display: flex;
+    margin: 0 10px;
+    font-size: 22px;
+    justify-content: center;
+    flex-shrink: 0;
 }
 .skyduck-weather__hourly-data-date {
     display: flex;
@@ -138,26 +162,31 @@ export const style = `
 .skyduck-weather__hourly-data-weather-icon {
     font-size: 26px;
 }
-.skyduck-weather__hourly-data-forecast {
+.skyduck-weather__hourly-data-forecast,
+.skyduck-weather__hourly-data-forecast-wind {
     display: flex;
     width: 100%;
-    height: 65px;
     justify-content: space-around;
     align-items: center;
     flex-direction: column;
-    padding: 0 5px;
+    padding: 10px 5px;
     color: #fff;
 }
-.skyduck-weather__hourly-data-forecast i {
+.skyduck-weather__hourly-data-forecast i,
+.skyduck-weather__hourly-data-forecast-wind i {
     font-size: 28px;
+    padding-bottom: 10px;
 }
-.skyduck-weather__hourly-data-forecast.--green {
-    background-color: rgba(50, 205, 50, .55);
+.skyduck-weather__hourly-data-forecast-wind {
+    display: grid;
+    grid-column: span 2;
+    grid-template-columns: 1fr 1fr;
 }
-.skyduck-weather__hourly-data-forecast.--amber {
-    background-color: rgba(255, 165, 0, .55);
-}
-.skyduck-weather__hourly-data-forecast.--red {
-    background-color: rgb(255, 0, 0, .55);
+.skyduck-weather__hourly-data-forecast-wind-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    height: 100%;
 }
 `;

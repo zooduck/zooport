@@ -100,8 +100,14 @@ export class SkyduckWeatherElements {
 
         const dayHeaderTitle = `
             <div class="skyduck-weather__daily-data-title ${iconData.modifier}">
+                <div class="skyduck-weather__daily-data-title-icon">
+                    <i class="far fa-circle"></i>
+                </div>
                 <h3 class="skyduck-weather__daily-data-title-date">${day} ${date}</h3>
-                <span class="skyduck-weather__daily-data-title-summary">${summary}</span>
+                <span class="skyduck-weather__daily-data-title-summary">${summary.replace(/\.$/, '')}</span>
+                <div class="skyduck-weather__daily-data-title-temperature">
+                    <span>${dailyData.temperatureAverage}&deg;</span>
+                </div>
             </div>
         `;
 
@@ -133,29 +139,29 @@ export class SkyduckWeatherElements {
     }
 
     private _buildForecastItems(
-        type: 'daily' | 'hourly',
         colorModifiers: ColorModifiers,
         cloudCover: number,
         windSpeed: number,
         windGust: number,
         precipProbability: number): string {
         return `
-            <div class="skyduck-weather__${type}-data-forecast ${colorModifiers.cloudCover}">
+            <div class="skyduck-weather__hourly-data-forecast ${colorModifiers.cloudCover}">
                 <i class="fas fa-cloud"></i>
                 <span>${cloudCover}%</span>
             </div>
 
-            <div class="skyduck-weather__${type}-data-forecast ${colorModifiers.windSpeed}">
-                <i class="fas fa-wind"></i>
-                <span>${windSpeed}</span>
+            <div class="skyduck-weather__hourly-data-forecast-wind ${colorModifiers.windGust}">
+                <div class="skyduck-weather__hourly-data-forecast-wind-item">
+                    <i class="fas fa-wind"></i>
+                    <span>${windSpeed}</span>
+                </div>
+                <div class="skyduck-weather__hourly-data-forecast-wind-item">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>${windGust}</span>
+                </div>
             </div>
 
-            <div class="skyduck-weather__${type}-data-forecast ${colorModifiers.windGust}">
-                <i class="fas fa-wind"></i>
-                <span>${windGust}</span>
-            </div>
-
-            <div class="skyduck-weather__${type}-data-forecast ${colorModifiers.precipProbability}">
+            <div class="skyduck-weather__hourly-data-forecast ${colorModifiers.precipProbability}">
                 <i class="fas fa-cloud-showers-heavy"></i>
                 <span>${precipProbability}%</span>
             </div>
@@ -203,7 +209,7 @@ export class SkyduckWeatherElements {
                 <i class="fas fa-${icon}"></i>
             </div>
 
-            ${this._buildForecastItems('hourly', colorModifiers, cloudCover, windSpeed, windGust, precipProbability)}
+            ${this._buildForecastItems(colorModifiers, cloudCover, windSpeed, windGust, precipProbability)}
         `;
 
         return html;
@@ -243,7 +249,7 @@ export class SkyduckWeatherElements {
     private _buildTitle(): HTMLElement {
         const title = this._domParser.parseFromString(`
             <div class="skyduck-weather__title">
-                <h1 style="margin: 0">Skyduck Weather</h1>
+                <h1>Skyduck Weather</h1>
                 <span>Weekly Skydiving forecast by Zooduck</span>
             </div>
         `, 'text/html').body.firstChild;
