@@ -181,18 +181,11 @@ export class SkyduckWeather {
     }
 
     public async getDailyForecastByClub(club: string): Promise<DailyForecast> {
-        const skydiveCentreFallback: SkydiveCentre = {
-            id: '',
-            club: '',
-            place: '0.000000, 0.000000',
-            latitude: 0,
-            longitude: 0,
-            site: '',
-        };
+        const skydiveCentre = skydiveCentres.find((item) => `${item.club} ${item.place}`.search(new RegExp(this._escapeSpecialChars(club), 'i')) !== -1);
 
-        const skydiveCentre: SkydiveCentre = club
-            ? skydiveCentres.find((item) => `${item.club} ${item.place}`.search(new RegExp(this._escapeSpecialChars(club), 'i')) !== -1) || skydiveCentreFallback
-            : skydiveCentreFallback;
+        if (!skydiveCentre) {
+            throw new Error(`Could not find club "${club}". Try searching by location using the "place" attribute instead.`);
+        }
 
         const dbWeatherResult = await this._queryDatabase(skydiveCentre.id);
         const oneHour = 1000 * 60 * 60;
