@@ -9,12 +9,6 @@ class SkyduckRadio extends HTMLElement {
         this._name = this.getAttribute('name');
         this._value = this.getAttribute('value');
         this._checked = this.hasAttribute('checked');
-
-        const style = this._getStyle();
-        const link = this._getFontAwesomeLink();
-
-        this.appendChild(link);
-        this.appendChild(style);
     }
 
     static get observedAttributes() {
@@ -97,6 +91,14 @@ class SkyduckRadio extends HTMLElement {
     }
 
     private _render() {
+        this.innerHTML = '';
+
+        const style = this._getStyle();
+        const link = this._getFontAwesomeLink();
+
+        this.appendChild(link);
+        this.appendChild(style);
+
         const html = new DOMParser().parseFromString(`
             <label class="zooduck-radio">
                     ${this._buildRawInput().outerHTML}
@@ -111,8 +113,15 @@ class SkyduckRadio extends HTMLElement {
 
     protected connectedCallback() {
         this._render();
+
+        this.dispatchEvent(new CustomEvent('ready', {
+            detail: {
+                nam: this._name,
+                value: this._value,
+                checked: this._checked,
+            }
+        }));
     }
 }
-
 
 customElements.define('skyduck-radio', SkyduckRadio);
