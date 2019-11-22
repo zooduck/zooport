@@ -113,7 +113,7 @@ class Skyduck extends HTMLElement {
     private async _setContent() {
         const googleMapsKey = await this._getGoogleMapsKey();
         const weatherElements: WeatherElements = new SkyduckWeatherElements(this._forecast, googleMapsKey);
-        const { title, map, place, header, days, footer, search } = weatherElements;
+        const { title, map, place, days, footer, search } = weatherElements;
 
         this._container.innerHTML = '';
 
@@ -121,7 +121,6 @@ class Skyduck extends HTMLElement {
         this._container.appendChild(map);
         this._container.appendChild(place);
         this._container.appendChild(search);
-        Array.from(header).forEach(el => this._container.appendChild(el));
         Array.from(days).forEach(el => this._container.appendChild(el));
         this._container.appendChild(footer);
     }

@@ -30,7 +30,7 @@ export const style = `
 }
 .skyduck-weather {
     display: grid;
-    grid-template-columns: repeat(2, 55px) repeat(4, 1fr);
+    grid-template-columns: repeat(2, 55px) repeat(3, 1fr) minmax(65px, 1fr);
     gap: 5px;
     place-items: center;
     margin-bottom: 20px;
@@ -94,33 +94,6 @@ export const style = `
     align-items: center;
     margin-left: 10px;
 }
-.skyduck-weather__header-summary {
-    grid-column-start: 1;
-    grid-column-end: span 2;
-    border: solid 1px #222;
-    font-size: 14px;
-    padding: 5px;
-}
-.skyduck-weather__header-icon {
-    align-self: end;
-    width: 100%;
-    text-align: center;
-    padding: 10px 0;
-    font-size: 28px;
-}
-.skyduck-weather__header-icon.--cloud-cover {
-    color: #fff;
-    background-color: lightgray;
-}
-.skyduck-weather__header-icon.--wind {
-    grid-column-end: span 2;
-    color: #fff;
-    background-color: lightskyblue;
-}
-.skyduck-weather__header-icon.--temperature {
-    color: rgba(255, 0, 0, .65);
-    background-color: #fff;
-}
 .skyduck-weather__footer {
     display: flex;
     justify-content: space-between;
@@ -132,21 +105,27 @@ export const style = `
 }
 .skyduck-weather__daily-data-title {
     display: flex;
-    grid-column-end: span 2;
+    grid-column: 1 / span 6;
+    width: 100%;
+    align-items: center;
 }
-.skyduck-weather__daily-data-date,
+.skyduck-weather__daily-data-title.--clear-day {
+    color: #fff;
+}
+.skyduck-weather__daily-data-title-date {
+    margin-left: 10px;
+    flex-shrink: 0;
+}
+.skyduck-weather__daily-data-title-summary {
+    margin-left: 10px;
+    padding: 5px;
+    margin: 0 5px;
+}
 .skyduck-weather__hourly-data-date {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-.skyduck-weather__daily-data-date {
-    padding: 5px 5px 5px 10px;
-}
-.skyduck-weather__daily-data-date.--clear-day {
-    color: #fff;
-}
-.skyduck-weather__daily-data-weather-icon,
 .skyduck-weather__hourly-data-weather-icon {
     display: flex;
     justify-content: center;
@@ -156,31 +135,29 @@ export const style = `
     border-radius: 50%;
     font-size: 32px;
 }
-.skyduck-weather__daily-data-weather-icon {
-    border-radius: 0;
-}
 .skyduck-weather__hourly-data-weather-icon {
     font-size: 26px;
 }
-.skyduck-weather__daily-data-forecast,
 .skyduck-weather__hourly-data-forecast {
     display: flex;
     width: 100%;
-    height: 55px;
-    justify-content: center;
+    height: 65px;
+    justify-content: space-around;
     align-items: center;
     flex-direction: column;
+    padding: 0 5px;
+    color: #fff;
 }
-.skyduck-weather__daily-data-forecast.--green,
+.skyduck-weather__hourly-data-forecast i {
+    font-size: 28px;
+}
 .skyduck-weather__hourly-data-forecast.--green {
-    background-color: rgba(50, 205, 50, .5);
+    background-color: rgba(50, 205, 50, .55);
 }
-.skyduck-weather__daily-data-forecast.--amber,
 .skyduck-weather__hourly-data-forecast.--amber {
-    background-color: rgba(255, 165, 0, .5);
+    background-color: rgba(255, 165, 0, .55);
 }
-.skyduck-weather__daily-data-forecast.--red,
 .skyduck-weather__hourly-data-forecast.--red {
-    background-color: rgb(255, 0, 0, .5);
+    background-color: rgb(255, 0, 0, .55);
 }
 `;

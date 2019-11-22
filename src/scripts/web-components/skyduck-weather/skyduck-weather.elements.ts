@@ -14,6 +14,7 @@ interface DailyData {
     apparentTemperatureAverage: number;
     time: number;
     icon: string;
+    summary: string;
     hourly: HourlyData[];
 }
 
@@ -25,18 +26,7 @@ interface HourlyData {
     apparentTemperature: number;
     time: number;
     icon: string;
-}
-
-interface ColorModifiersData {
-    cloudCover: number;
-    windSpeed: number;
-    windGust: number;
-    temperature: number;
-}
-
-interface IconData {
-    icon: string;
-    modifier: string;
+    precipProbability: number;
 }
 
 interface ColorModifiers {
@@ -44,11 +34,24 @@ interface ColorModifiers {
     windSpeed: string;
     windGust: string;
     temperature: string;
+    precipProbability: string;
+}
+
+interface ColorModifiersData {
+    cloudCover: number;
+    windSpeed: number;
+    windGust: number;
+    temperature: number;
+    precipProbability: number;
+}
+
+interface IconData {
+    icon: string;
+    modifier: string;
 }
 
 export interface WeatherElements {
     footer: HTMLElement;
-    header: HTMLCollection;
     map: HTMLIFrameElement;
     days: HTMLCollection;
     place: HTMLElement;
@@ -89,41 +92,25 @@ export class SkyduckWeatherElements {
         return html.join('');
     }
 
-    private _buildDay(dailyData: DailyData) {
-        const { icon: dailyDataIcon, cloudCover, windSpeed, windGust, time, apparentTemperatureAverage } = dailyData;
-        const colorModifiersData: ColorModifiersData = {
-            cloudCover,
-            windSpeed,
-            windGust,
-            temperature: dailyData.apparentTemperatureAverage
-        };
-        const colorModifiers = this._getColorModifiers(colorModifiersData);
+    private _buildDayHeader(dailyData: DailyData): string {
+        const { icon: dailyDataIcon, cloudCover, time, summary } = dailyData;
         const iconData = this._getIconData(dailyDataIcon, cloudCover);
-        const icon = iconData.icon;
         const date = new Date(time * 1000).toLocaleDateString().substr(0, 5);
         const day = new Date(time * 1000).toDateString().substr(0, 3);
 
-        const html = `
+        const dayHeaderTitle = `
             <div class="skyduck-weather__daily-data-title ${iconData.modifier}">
-                <div class="skyduck-weather__daily-data-date ${iconData.modifier}">
-                    <span>${day}</span>
-                    <span>${date}</span>
-                </div>
-
-                <div class="skyduck-weather__daily-data-weather-icon ${iconData.modifier}">
-                    <i class="fas fa-${icon}"></i>
-                </div>
+                <h3 class="skyduck-weather__daily-data-title-date">${day} ${date}</h3>
+                <span class="skyduck-weather__daily-data-title-summary">${summary}</span>
             </div>
-
-            ${this._buildForecastItems('daily', colorModifiers, cloudCover, windSpeed, windGust, apparentTemperatureAverage)}
         `;
 
-        return html;
+        return dayHeaderTitle;
     }
 
     private _buildDays(): HTMLCollection {
         const days: string[] = this._dailyForecast.weather.daily.data.map((dailyDataItem: DailyData): string => {
-            const day = this._buildDay(dailyDataItem);
+            const day = this._buildDayHeader(dailyDataItem);
             const hours = dailyDataItem.hourly.map((hourlyDataItem: HourlyData) => {
                 return this._buildHour(hourlyDataItem);
             });
@@ -151,25 +138,27 @@ export class SkyduckWeatherElements {
         cloudCover: number,
         windSpeed: number,
         windGust: number,
-        temperature: number): string {
+        precipProbability: number): string {
         return `
-        <div class="skyduck-weather__${type}-data-forecast ${colorModifiers.cloudCover}">
-            <span>${cloudCover}%</span>
-        </div>
+            <div class="skyduck-weather__${type}-data-forecast ${colorModifiers.cloudCover}">
+                <i class="fas fa-cloud"></i>
+                <span>${cloudCover}%</span>
+            </div>
 
-        <div class="skyduck-weather__${type}-data-forecast ${colorModifiers.windSpeed}">
-            <span>${windSpeed}</span>
-            <small>mph</small>
-        </div>
+            <div class="skyduck-weather__${type}-data-forecast ${colorModifiers.windSpeed}">
+                <i class="fas fa-wind"></i>
+                <span>${windSpeed}</span>
+            </div>
 
-        <div class="skyduck-weather__${type}-data-forecast ${colorModifiers.windGust}">
-            <span>${windGust}</span>
-            <small>mph</small>
-        </div>
+            <div class="skyduck-weather__${type}-data-forecast ${colorModifiers.windGust}">
+                <i class="fas fa-wind"></i>
+                <span>${windGust}</span>
+            </div>
 
-        <div class="skyduck-weather__${type}-data-forecast ${colorModifiers.temperature}">
-            <span>${temperature}&deg;C<span>
-        </div>
+            <div class="skyduck-weather__${type}-data-forecast ${colorModifiers.precipProbability}">
+                <i class="fas fa-cloud-showers-heavy"></i>
+                <span>${precipProbability}%</span>
+            </div>
         `;
     }
 
@@ -191,27 +180,14 @@ export class SkyduckWeatherElements {
         return iframe as HTMLIFrameElement;
     }
 
-    private _buildHeader(): HTMLCollection {
-        const weather = this._dailyForecast.weather;
-        const header = this._domParser.parseFromString(`
-            <div class="skyduck-weather__header-summary">
-                <span>${weather.daily.summary}</span>
-            </div>
-            <i class="skyduck-weather__header-icon --cloud-cover fas fa-cloud"></i>
-            <i class="skyduck-weather__header-icon --wind fas fa-wind"></i>
-            <i class="skyduck-weather__header-icon --temperature fas fa-temperature-low"></i>
-        `, 'text/html').body.children;
-
-        return header as HTMLCollection;
-    }
-
     private _buildHour(hourlyData: HourlyData) {
-        const { icon: hourlyDataIcon, cloudCover, windSpeed, windGust, time, apparentTemperature } = hourlyData;
+        const { icon: hourlyDataIcon, cloudCover, windSpeed, windGust, time, precipProbability } = hourlyData;
         const colorModifiersData: ColorModifiersData = {
             cloudCover,
             windSpeed,
             windGust,
             temperature: hourlyData.apparentTemperature,
+            precipProbability,
         };
         const colorModifiers = this._getColorModifiers(colorModifiersData);
         const iconData = this._getIconData(hourlyDataIcon, cloudCover);
@@ -227,7 +203,7 @@ export class SkyduckWeatherElements {
                 <i class="fas fa-${icon}"></i>
             </div>
 
-            ${this._buildForecastItems('hourly', colorModifiers, cloudCover, windSpeed, windGust, apparentTemperature)}
+            ${this._buildForecastItems('hourly', colorModifiers, cloudCover, windSpeed, windGust, precipProbability)}
         `;
 
         return html;
@@ -277,10 +253,11 @@ export class SkyduckWeatherElements {
 
     private _getColorModifiers(colorModifiersData: ColorModifiersData): ColorModifiers {
         return {
-            cloudCover: colorModifiersData.cloudCover <= 20 ? '--green' : colorModifiersData.cloudCover <= 50 ? '--amber' : '--red',
-            windSpeed: colorModifiersData.windSpeed <= 18 ? '--green' : colorModifiersData.windSpeed <= 25 ? '--amber' : '--red',
-            windGust : colorModifiersData.windGust <= 18 ? '--green' : colorModifiersData.windGust <= 25 ? '--amber' : '--red',
-            temperature: colorModifiersData.temperature >= 15 ? '--green' : colorModifiersData.temperature >= 10 ? '--amber' : '--red',
+            cloudCover: `--${this._rateCloudCover(colorModifiersData.cloudCover)}`,
+            windSpeed: `--${this._rateWindSpeed(colorModifiersData.windSpeed)}`,
+            windGust: `--${this._rateWindGust(colorModifiersData.windGust)}`,
+            temperature: `--${this._rateTemperature(colorModifiersData.temperature)}`,
+            precipProbability: `--${this._ratePrecipProbability(colorModifiersData.precipProbability)}`,
         };
     }
 
@@ -292,12 +269,44 @@ export class SkyduckWeatherElements {
         return iconMap[icon] || iconMap.default;
     }
 
-    public get footer(): HTMLElement {
-        return this._buildFooter();
+    private _rateCloudCover(cloudCover: number): 'green'|'amber'|'red' {
+        return cloudCover <= 25
+            ? 'green'
+            : cloudCover <= 50
+                ? 'amber'
+                : 'red';
     }
 
-    public get header(): HTMLCollection {
-        return this._buildHeader();
+    private _rateWindSpeed(windSpeed: number): 'green'|'amber'|'red' {
+        return windSpeed <= 10
+            ? 'green'
+            : windSpeed <= 20
+                ? 'amber'
+                : 'red';
+    }
+
+    private _rateWindGust(windGust: number): 'green'|'amber'|'red' {
+        return this._rateWindSpeed(windGust);
+    }
+
+    private _rateTemperature(temperature: number): 'green'|'amber'|'red' {
+        return temperature >= 15
+            ? 'green'
+            : temperature >= 10
+                ? 'amber'
+                : 'red';
+    }
+
+    private _ratePrecipProbability(precipProbability: number): 'green'|'amber'|'red' {
+        return precipProbability <= 20
+            ? 'green'
+            : precipProbability <= 50
+                ? 'amber'
+                : 'red';
+    }
+
+    public get footer(): HTMLElement {
+        return this._buildFooter();
     }
 
     public get map(): HTMLIFrameElement {

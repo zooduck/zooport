@@ -1,13 +1,13 @@
 type DarkSkyDataDaily {
     summary: String,
     icon: String,
-    data: [DarkSkyDataDailyData]
+    data: [DarkSkyDataDailyData],
 }
 
 type DarkSkyDataHourly {
     summary: String,
     icon: String,
-    data: [DarkSkyDataHourlyData]
+    data: [DarkSkyDataHourlyData],
 }
 
 type DarkSkyData {
@@ -36,7 +36,7 @@ type DarkSkyDataHourlyData {
     cloudCover: Float,
     uvIndex: Int,
     visibility: Float,
-    ozone: Float
+    ozone: Float,
 }
 
 type DarkSkyDataDailyData {
@@ -78,7 +78,7 @@ type DarkSkyDataDailyData {
     windBearing: Int,
     windGust: Float,
     windGustTime: Int,
-    windSpeed: Float
+    windSpeed: Float,
 }
 
 type Animal {
