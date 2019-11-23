@@ -199,6 +199,6 @@ export const style = `
     background-color: rgba(255, 165, 0, .55);
 }
 .--red {
-    background-color: rgba(255, 0, 0, .55);
+    background-color: rgba(255, 0, 0, .45);
 }
 `;
