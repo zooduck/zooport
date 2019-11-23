@@ -60,6 +60,9 @@ export const style = `
     font-size: 42px;
     color: gainsboro;
 }
+.skyduck-weather.--ready .skyduck-weather__loader {
+    display: none;
+}
 .skyduck-weather__title {
     display: flex;
     flex-direction: column;

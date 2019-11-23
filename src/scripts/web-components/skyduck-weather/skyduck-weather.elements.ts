@@ -53,7 +53,7 @@ interface IconData {
 export interface WeatherElements {
     footer: HTMLElement;
     map: HTMLIFrameElement;
-    days: HTMLCollection;
+    days: Element[];
     place: HTMLElement;
     search: HTMLElement;
     title: HTMLElement;
@@ -62,12 +62,14 @@ export interface WeatherElements {
 export class SkyduckWeatherElements {
     private _dailyForecast: DailyForecast;
     private _date: Date;
+    private _defaultSearchType: string;
     private _domParser: DOMParser;
     private _googleMapsKey: string;
 
-    constructor(dailyForecast: DailyForecast, googleMapsKey: string) {
+    constructor(dailyForecast: DailyForecast, googleMapsKey: string, defaultSearchType: string) {
         this._dailyForecast = dailyForecast;
         this._date = new Date(dailyForecast.weather.requestTime);
+        this._defaultSearchType = defaultSearchType;
         this._domParser = new DOMParser();
         this._googleMapsKey = googleMapsKey;
     }
@@ -114,7 +116,7 @@ export class SkyduckWeatherElements {
         return dayHeaderTitle;
     }
 
-    private _buildDays(): HTMLCollection {
+    private _buildDays(): Element[] {
         const days: string[] = this._dailyForecast.weather.daily.data.map((dailyDataItem: DailyData): string => {
             const day = this._buildDayHeader(dailyDataItem);
             const hours = dailyDataItem.hourly.map((hourlyDataItem: HourlyData) => {
@@ -124,7 +126,7 @@ export class SkyduckWeatherElements {
             return `${day}${hours.join('')}`;
         });
 
-        return this._domParser.parseFromString(days.join(''), 'text/html').body.children;
+        return Array.from(this._domParser.parseFromString(days.join(''), 'text/html').body.children);
     }
 
     private _buildFooter(): HTMLElement {
@@ -237,8 +239,8 @@ export class SkyduckWeatherElements {
                     <i slot="left-icon" class="fas fa-map-marked-alt"></i>
                 </zooduck-input>
                 <form class="skyduck-weather__search-radios">
-                    <skyduck-radio name="searchType" value="club" checked></skyduck-radio>
-                    <skyduck-radio name="searchType" value="location"></skyduck-radio>
+                    <skyduck-radio name="searchType" value="club" ${this._defaultSearchType === 'club' ? 'checked' : ''}></skyduck-radio>
+                    <skyduck-radio name="searchType" value="location" ${this._defaultSearchType === 'location' ? 'checked' : ''}></skyduck-radio>
                 </form>
             </div>
         `, 'text/html').body.firstChild;
@@ -319,7 +321,7 @@ export class SkyduckWeatherElements {
         return this._buildGoogleMap();
     }
 
-    public get days(): HTMLCollection {
+    public get days(): Element[] {
         return this._buildDays();
     }
 
