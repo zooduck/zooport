@@ -195,11 +195,13 @@ class HTMLSkyduckWeatherElement extends HTMLElement {
         `, 'text/html').body.firstChild;
 
         errorNotification.addEventListener('click', () => {
-            this._error = '';
-            this._container.classList.remove(this._modifierClasses.error);
-            this._setContent({
-                useLoader: false,
-            });
+            if (this._forecast) {
+                this._error = '';
+                this._container.classList.remove(this._modifierClasses.error);
+                this._setContent({
+                    useLoader: false,
+                });
+            }
         });
 
         return errorNotification as HTMLElement;
