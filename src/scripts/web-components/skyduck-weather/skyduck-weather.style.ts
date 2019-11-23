@@ -39,7 +39,7 @@ export const style = `
 }
 .skyduck-weather {
     display: grid;
-    grid-template-columns: repeat(2, 55px) repeat(3, 1fr) minmax(65px, 1fr);
+    grid-template-columns: 30px 55px repeat(4, 1fr) minmax(65px, 1fr);
     gap: 5px;
     place-items: center;
     margin-bottom: 20px;
@@ -57,7 +57,7 @@ export const style = `
 }
 .skyduck-weather__loader,
 .skyduck-weather__error {
-    grid-column: 1 / span 6;
+    grid-column: 1 / span 7;
     font-size: 42px;
     color: gainsboro;
 }
@@ -80,8 +80,7 @@ export const style = `
     flex-direction: column;
     align-items: center;
     width: 100%;
-    grid-column-start: 1;
-    grid-column-end: span 6;
+    grid-column: 1 / span 7;
     margin-bottom: 10px;
 }
 .skyduck-weather__title h1 {
@@ -92,22 +91,21 @@ export const style = `
     height: 150px;
     border: 0;
     background-color: rgba(0, 0, 0, .10);
-    grid-column-start: 1;
-    grid-column-end: span 6;
+    grid-column: 1 / span 7;
 }
 .skyduck-weather__place {
     display: flex;
     flex-direction: column;
     justify-self: left;
     grid-column-start: 1;
-    grid-column-end: span 6;
+    grid-column-end: span 7;
     font-size: 14px;
 }
 .skyduck-weather__place h3 {
     margin: 0;
 }
 .skyduck-weather__search {
-    grid-column: 1 / span 6;
+    grid-column: 1 / span 7;
     width: 100%;
     display: flex;
     margin: 5px 0;
@@ -124,15 +122,14 @@ export const style = `
 .skyduck-weather__footer {
     display: flex;
     justify-content: space-between;
-    grid-column-start: 1;
-    grid-column-end: span 6;
+    grid-column: 1 / span 7;
     width: 100%;
     margin-top: 20px;
     font-size: 14px;
 }
 .skyduck-weather__daily-data-title {
     display: flex;
-    grid-column: 1 / span 6;
+    grid-column: 1 / span 7;
     width: 100%;
     align-items: center;
 }

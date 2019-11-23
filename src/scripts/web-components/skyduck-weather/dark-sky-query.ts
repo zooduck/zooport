@@ -19,7 +19,8 @@ export const darkSkyQuery = `query DarkskyData($lat: Float!, $lon: Float!) {
                 windSpeed,
                 windGust,
                 windBearing,
-                cloudCover
+                cloudCover,
+                visibility
             }
         },
         hourly {
@@ -34,7 +35,8 @@ export const darkSkyQuery = `query DarkskyData($lat: Float!, $lon: Float!) {
                 windSpeed,
                 windGust,
                 windBearing,
-                cloudCover
+                cloudCover,
+                visibility
             }
         }
     }

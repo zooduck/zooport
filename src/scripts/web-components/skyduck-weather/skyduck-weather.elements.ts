@@ -4,6 +4,7 @@ import '../skyduck-radio/skyduck-radio.component';
 
 interface DailyData {
     cloudCover: number;
+    visibility: number;
     windSpeed: number;
     windGust: number;
     temperatureHigh: number;
@@ -20,6 +21,7 @@ interface DailyData {
 
 interface HourlyData {
     cloudCover: number;
+    visibility: number;
     windSpeed: number;
     windGust: number;
     temperature: number;
@@ -35,6 +37,7 @@ interface ColorModifiers {
     windGust: string;
     temperature: string;
     precipProbability: string;
+    visibility: string;
 }
 
 interface ColorModifiersData {
@@ -43,6 +46,7 @@ interface ColorModifiersData {
     windGust: number;
     temperature: number;
     precipProbability: number;
+    visibility: number;
 }
 
 interface IconData {
@@ -145,11 +149,17 @@ export class SkyduckWeatherElements {
         cloudCover: number,
         windSpeed: number,
         windGust: number,
-        precipProbability: number): string {
+        precipProbability: number,
+        visibility: number): string {
         return `
             <div class="skyduck-weather__hourly-data-forecast ${colorModifiers.cloudCover}">
                 <i class="fas fa-cloud"></i>
                 <span>${cloudCover}%</span>
+            </div>
+
+            <div class="skyduck-weather__hourly-data-forecast ${colorModifiers.visibility}">
+                <i class="fas fa-eye"></i>
+                <span>${visibility}</span>
             </div>
 
             <div class="skyduck-weather__hourly-data-forecast-wind ${colorModifiers.windGust}">
@@ -189,29 +199,30 @@ export class SkyduckWeatherElements {
     }
 
     private _buildHour(hourlyData: HourlyData) {
-        const { icon: hourlyDataIcon, cloudCover, windSpeed, windGust, time, precipProbability } = hourlyData;
+        const { icon: hourlyDataIcon, cloudCover, windSpeed, windGust, time, precipProbability, visibility } = hourlyData;
         const colorModifiersData: ColorModifiersData = {
             cloudCover,
             windSpeed,
             windGust,
             temperature: hourlyData.apparentTemperature,
             precipProbability,
+            visibility,
         };
         const colorModifiers = this._getColorModifiers(colorModifiersData);
         const iconData = this._getIconData(hourlyDataIcon, cloudCover);
         const icon = iconData.icon;
-        const date = new Date(time * 1000).toLocaleTimeString().substr(0, 5);
+        const hour = new Date(time * 1000).getHours();
 
         const html = `
             <div class="skyduck-weather__hourly-data-date">
-                <span>${date}</span>
+                <span>${hour}</span>
             </div>
 
             <div class="skyduck-weather__hourly-data-weather-icon ${iconData.modifier}">
                 <i class="fas fa-${icon}"></i>
             </div>
 
-            ${this._buildForecastItems(colorModifiers, cloudCover, windSpeed, windGust, precipProbability)}
+            ${this._buildForecastItems(colorModifiers, cloudCover, windSpeed, windGust, precipProbability, visibility)}
         `;
 
         return html;
@@ -266,6 +277,7 @@ export class SkyduckWeatherElements {
             windGust: `--${this._rateWindGust(colorModifiersData.windGust)}`,
             temperature: `--${this._rateTemperature(colorModifiersData.temperature)}`,
             precipProbability: `--${this._ratePrecipProbability(colorModifiersData.precipProbability)}`,
+            visibility: `--${this._rateVisibility(colorModifiersData.visibility)}`,
         };
     }
 
@@ -309,6 +321,14 @@ export class SkyduckWeatherElements {
         return precipProbability <= 20
             ? 'green'
             : precipProbability <= 50
+                ? 'amber'
+                : 'red';
+    }
+
+    private _rateVisibility(visibility: number): 'green'|'amber'|'red' {
+        return visibility >= 5
+            ? 'green'
+            : visibility >= 3
                 ? 'amber'
                 : 'red';
     }

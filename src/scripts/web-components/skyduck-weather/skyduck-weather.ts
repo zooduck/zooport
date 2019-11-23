@@ -59,17 +59,18 @@ export class SkyduckWeather {
         return dailyData.map((dailyItem: any) => {
             return {
                 ...dailyItem,
-                cloudCover: parseInt((dailyItem.cloudCover * 100).toString(), 10),
-                precipProbability: parseInt((dailyItem.precipProbability * 100).toString(), 10),
-                temperatureLow: parseInt(dailyItem.temperatureLow, 10),
-                temperatureHigh: parseInt(dailyItem.temperatureHigh, 10),
-                temperatureAverage: Math.round((dailyItem.temperatureHigh + dailyItem.temperatureLow) / 2),
-                apparentTemperatureLow: parseInt(dailyItem.apparentTemperatureLow, 10),
-                apparentTemperatureHigh: parseInt(dailyItem.apparentTemperatureHigh, 10),
-                apparentTemperatureAverage: Math.round((dailyItem.apparentTemperatureHigh + dailyItem.apparentTemperatureLow) / 2),
-                humidity: parseInt((dailyItem.humidity * 100).toString(), 10),
-                windGust: parseInt(dailyItem.windGust, 10),
-                windSpeed: parseInt(dailyItem.windSpeed, 10),
+                cloudCover: this._fractionToPercent(dailyItem.cloudCover),
+                precipProbability: this._fractionToPercent(dailyItem.precipProbability),
+                temperatureLow: this._floatToInt(dailyItem.temperatureLow),
+                temperatureHigh: this._floatToInt(dailyItem.temperatureHigh),
+                temperatureAverage: this._floatToInt((dailyItem.temperatureHigh + dailyItem.temperatureLow) / 2),
+                apparentTemperatureLow: this._floatToInt(dailyItem.apparentTemperatureLow),
+                apparentTemperatureHigh: this._floatToInt(dailyItem.apparentTemperatureHigh),
+                apparentTemperatureAverage: this._floatToInt((dailyItem.apparentTemperatureHigh + dailyItem.apparentTemperatureLow) / 2),
+                humidity: this._fractionToPercent(dailyItem.humidity),
+                windGust: this._floatToInt(dailyItem.windGust),
+                windSpeed: this._floatToInt(dailyItem.windSpeed),
+                visibility: this._floatToInt(dailyItem.visibility),
                 hourly: this._hourlyData.filter((hourlyItem: any) => {
                     const dailyItemDate = new Date(dailyItem.time * 1000).getDate();
                     const hourlyItemDate = new Date(hourlyItem.time * 1000).getDate();
@@ -95,6 +96,7 @@ export class SkyduckWeather {
                 humidity: this._fractionToPercent(hourlyItem.humidity),
                 windGust: this._floatToInt(hourlyItem.windGust),
                 windSpeed: this._floatToInt(hourlyItem.windSpeed),
+                visibility:  this._floatToInt(hourlyItem.visibility),
             };
         });
     }
