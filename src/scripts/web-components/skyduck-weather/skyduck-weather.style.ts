@@ -131,18 +131,16 @@ export const style = `
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 55px;
-    height: 55px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     font-size: 32px;
-}
-.skyduck-weather__hourly-data-weather-icon {
-    font-size: 26px;
 }
 .skyduck-weather__hourly-data-forecast,
 .skyduck-weather__hourly-data-forecast-wind {
     display: flex;
     width: 100%;
+    height: 100%;
     justify-content: space-around;
     align-items: center;
     flex-direction: column;

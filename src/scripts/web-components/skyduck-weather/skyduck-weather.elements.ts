@@ -160,16 +160,19 @@ export class SkyduckWeatherElements {
             <div class="skyduck-weather__hourly-data-forecast ${colorModifiers.visibility}">
                 <i class="fas fa-binoculars"></i>
                 <span>${visibility}</span>
+                <small>miles</small>
             </div>
 
             <div class="skyduck-weather__hourly-data-forecast-wind ${colorModifiers.windGust}">
                 <div class="skyduck-weather__hourly-data-forecast-wind-item">
-                    <i class="fas fa-wind"></i>
+                    <i class="fas fa-angle-down"></i>
                     <span>${windSpeed}</span>
+                    <small>mph</small>
                 </div>
                 <div class="skyduck-weather__hourly-data-forecast-wind-item">
-                    <i class="fas fa-exclamation-triangle"></i>
+                    <i class="fas fa-chevron-up"></i>
                     <span>${windGust}</span>
+                    <small>mph</small>
                 </div>
             </div>
 
