@@ -2,13 +2,23 @@ import { style } from './skyduck-weather.style';
 import { SkyduckWeatherElements, WeatherElements } from './skyduck-weather.elements'; // eslint-disable-line no-unused-vars
 import { DailyForecast, GeocodeData, SkyduckWeather } from './skyduck-weather'; // eslint-disable-line no-unused-vars
 
-class Skyduck extends HTMLElement {
+interface ModifierClasses {
+    ready: string;
+    error: string;
+}
+
+class HTMLSkyduckWeatherElement extends HTMLElement {
     private _club: string;
     private _container: HTMLElement;
     private _domParser: DOMParser;
+    private _error: string;
     private _forecast: DailyForecast;
     private _geocodeData: GeocodeData;
     private _googleMapsKey: string;
+    private _modifierClasses: ModifierClasses = {
+        ready: '--ready',
+        error: '--error',
+    };
     private _onSearchSubmit: EventListener;
     private _place: string;
     private _searchType = 'club';
@@ -24,7 +34,6 @@ class Skyduck extends HTMLElement {
 
         this._container = document.createElement('div');
         this._container.className = 'skyduck-weather';
-        this._container.appendChild(this._getLoader());
 
         const style = this._getStyle();
         const link = this._getFontAwesomeLink();
@@ -63,9 +72,11 @@ class Skyduck extends HTMLElement {
         if (val !== null) {
             this.removeAttribute('club');
             this._geocodeLookup().then(() => {
-                this._updateContent();
             }).catch((err) => {
                 console.error(err); // eslint-disable-line no-console
+                this._error = err;
+            }).then(() => {
+                this._updateContent();
             });
         }
         this._syncStringAttr('place', this.place);
@@ -98,12 +109,9 @@ class Skyduck extends HTMLElement {
     }
 
     private _clearContainer() {
-        Array.from(this._container.children).forEach((child) => {
-            if (!child.classList.contains('skyduck-weather__loader')) {
-                child.parentNode.removeChild(child);
-            }
-        });
-        this._container.classList.remove('--ready');
+        this._container.innerHTML = '';
+        this._container.classList.remove(this._modifierClasses.ready);
+        this._container.classList.remove(this._modifierClasses.error);
     }
 
     private async _customElementsLoaded(customElements: Element[]): Promise<void> {
@@ -128,19 +136,21 @@ class Skyduck extends HTMLElement {
             const resource = json.resourceSets[0].resources[0];
 
             if (!resource) {
-                throw new Error(`Geocode unable to resolve location of ${this.place}`);
+                this._geocodeData = null;
+                throw Error(`Geocode unable to resolve location of ${this.place}`);
             }
 
             const coords = resource.geocodePoints[0].coordinates;
             const { name, address } = resource;
+
             this._geocodeData = {
                 address,
                 name,
                 latitude: coords[0],
                 longitude: coords[1],
             };
-        }).catch((err) => {
-            console.error(err); // eslint-disable-line no-console
+        }, (err) => {
+            throw Error(err);
         });
     }
 
@@ -173,6 +183,22 @@ class Skyduck extends HTMLElement {
         return loader as HTMLElement;
     }
 
+    private _getErrorNotification(): HTMLElement {
+        const errorNotification = this._domParser.parseFromString(`
+            <div class="skyduck-weather__error">
+                <span>${this._error}</span>
+            </div>
+        `, 'text/html').body.firstChild;
+
+        errorNotification.addEventListener('click', () => {
+            this._error = '';
+            this._container.classList.remove(this._modifierClasses.error);
+            this._setContent();
+        });
+
+        return errorNotification as HTMLElement;
+    }
+
     private _getStyle(): HTMLStyleElement {
         const styleEl = document.createElement('style');
         styleEl.textContent = style;
@@ -181,7 +207,15 @@ class Skyduck extends HTMLElement {
     }
 
     private async _setContent() {
-        await this._wait(1000); // show loading spinner for at least 1 second
+        if (this._error) {
+            this._container.classList.add(this._modifierClasses.error);
+            this._container.appendChild(this._getErrorNotification());
+
+            return;
+        }
+
+        const minLoaderTime = 1000;
+        await this._wait(minLoaderTime);
 
         const googleMapsKey = await this._getGoogleMapsKey();
         const weatherElements: WeatherElements = new SkyduckWeatherElements(this._forecast, googleMapsKey, this._searchType);
@@ -199,7 +233,8 @@ class Skyduck extends HTMLElement {
         days.forEach(el => this._container.appendChild(el));
         this._container.appendChild(footer);
 
-        this._container.classList.add('--ready');
+        this._container.classList.add(this._modifierClasses.ready);
+        this._container.classList.remove(this._modifierClasses.error);
     }
 
     private _syncStringAttr(name: string, val: string) {
@@ -211,20 +246,25 @@ class Skyduck extends HTMLElement {
     }
 
     private async _updateContent() {
+        this._clearContainer();
+        this._container.appendChild(this._getLoader());
+
         if (!this.club && !this._geocodeData) {
+            this._setContent();
+
             return;
         }
 
         try {
-            this._clearContainer();
-
             if (this.club) {
                 this._forecast = await this._weather.getDailyForecastByClub(this.club);
             } else if (this._geocodeData) {
                 this._forecast = await this._weather.getDailyForecastByQuery(this._geocodeData);
             }
+            this._error = '';
         } catch (err) {
             console.error(err); // eslint-disable-line no-console
+            this._error = err;
         } finally {
             this._setContent();
         }
@@ -243,4 +283,4 @@ class Skyduck extends HTMLElement {
     }
 }
 
-customElements.define('skyduck-weather', Skyduck);
+customElements.define('skyduck-weather', HTMLSkyduckWeatherElement);

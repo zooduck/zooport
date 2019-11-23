@@ -3,7 +3,7 @@ import 'regenerator-runtime/runtime'; // required for async/await to work with b
 import { siteInfo, ZooHeader, versionScramble, wait } from './utils/index';
 import { graphqlConfig } from './config/index';
 import { SkydiveWeather } from './utils/skydive-weather/index';
-import { SkyduckWeather } from './web-components/skyduck-weather/index';
+import { SkyduckWeather } from './web-components/skyduck-weather/skyduck-weather';
 import './web-components/skyduck-weather/skyduck-weather.component';
 
 const loadIntro = async () => {

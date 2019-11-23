@@ -184,7 +184,7 @@ export class SkyduckWeather {
         const skydiveCentre = skydiveCentres.find((item) => `${item.club} ${item.place}`.search(new RegExp(this._escapeSpecialChars(club), 'i')) !== -1);
 
         if (!skydiveCentre) {
-            throw new Error(`Could not find club "${club}". Try searching by location using the "place" attribute instead.`);
+            throw new Error(`Could not find club "${club}". Try searching by location instead.`);
         }
 
         const dbWeatherResult = await this._queryDatabase(skydiveCentre.id);

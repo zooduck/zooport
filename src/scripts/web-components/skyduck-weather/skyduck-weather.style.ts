@@ -35,7 +35,7 @@ export const style = `
     background-color: rgba(255, 165, 0, .55);
 }
 .--red {
-    background-color: rgb(255, 0, 0, .55);
+    background-color: rgba(255, 0, 0, .55);
 }
 .skyduck-weather {
     display: grid;
@@ -55,12 +55,24 @@ export const style = `
 .skyduck-weather a:hover {
     text-decoration: underline;
 }
-.skyduck-weather__loader {
+.skyduck-weather__loader,
+.skyduck-weather__error {
     grid-column: 1 / span 6;
     font-size: 42px;
     color: gainsboro;
 }
-.skyduck-weather.--ready .skyduck-weather__loader {
+.skyduck-weather__error {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    font-size: 22px;
+    color: rgb(255, 0, 0, .55);
+}
+.skyduck-weather:not(.--error) .skyduck-weather__error {
+    display: none;
+}
+.skyduck-weather.--ready .skyduck-weather__loader,
+.skyduck-weather.--error .skyduck-weather__loader {
     display: none;
 }
 .skyduck-weather__title {
