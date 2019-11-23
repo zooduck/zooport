@@ -24,7 +24,7 @@ class HTMLSkyduckWeatherElement extends HTMLElement {
         error: '--error',
     };
     private _onSearchSubmit: EventListener;
-    private _place: string;
+    private _location: string;
     private _searchType = 'club';
     private _weather: SkyduckWeather;
 
@@ -50,29 +50,29 @@ class HTMLSkyduckWeatherElement extends HTMLElement {
     static get observedAttributes() {
         return [
             'club',
-            'place',
+            'location',
         ];
     }
 
-    private get club() {
+    public get club() {
         return this._club;
     }
 
-    private set club(val: string|null) {
+    public set club(val: string|null) {
         this._club = val;
         if (val !== null) {
-            this.removeAttribute('place');
+            this.removeAttribute('location');
             this._updateContent();
         }
         this._syncStringAttr('club', this.club);
     }
 
-    private get place() {
-        return this._place;
+    public get location() {
+        return this._location;
     }
 
-    private set place(val: string|null) {
-        this._place = val;
+    public set location(val: string|null) {
+        this._location = val;
         if (val !== null) {
             this.removeAttribute('club');
             this._geocodeLookup().then(() => {
@@ -83,7 +83,7 @@ class HTMLSkyduckWeatherElement extends HTMLElement {
                 this._updateContent();
             });
         }
-        this._syncStringAttr('place', this.place);
+        this._syncStringAttr('location', this._location);
     }
 
     private _addEventListeners() {
@@ -102,7 +102,7 @@ class HTMLSkyduckWeatherElement extends HTMLElement {
                 this.club = value;
                 break;
             case 'location':
-                this.place = value;
+                this.location = value;
                 break;
             default: // do nothing
             }
@@ -135,13 +135,13 @@ class HTMLSkyduckWeatherElement extends HTMLElement {
     }
 
     private _geocodeLookup(): Promise<any> {
-        return fetch(`/geocode?place=${this.place}`).then(async (result) => {
+        return fetch(`/geocode?place=${this._location}`).then(async (result) => {
             const json = await result.json();
             const resource = json.resourceSets[0].resources[0];
 
             if (!resource) {
                 this._geocodeData = null;
-                throw Error(`Geocode unable to resolve location "${this.place}"`);
+                throw Error(`Geocode unable to resolve location "${this._location}"`);
             }
 
             const coords = resource.geocodePoints[0].coordinates;

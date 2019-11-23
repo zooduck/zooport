@@ -158,7 +158,7 @@ export class SkyduckWeatherElements {
             </div>
 
             <div class="skyduck-weather__hourly-data-forecast ${colorModifiers.visibility}">
-                <i class="fas fa-eye"></i>
+                <i class="fas fa-binoculars"></i>
                 <span>${visibility}</span>
             </div>
 
@@ -211,7 +211,11 @@ export class SkyduckWeatherElements {
         const colorModifiers = this._getColorModifiers(colorModifiersData);
         const iconData = this._getIconData(hourlyDataIcon, cloudCover);
         const icon = iconData.icon;
-        const hour = new Date(time * 1000).getHours();
+        let hour: string|number = new Date(time * 1000).getHours();
+
+        if (hour.toString().length === 1) {
+            hour = `0${hour}`;
+        }
 
         const html = `
             <div class="skyduck-weather__hourly-data-date">
@@ -263,7 +267,7 @@ export class SkyduckWeatherElements {
         const title = this._domParser.parseFromString(`
             <div class="skyduck-weather__title">
                 <h1>Skyduck Weather</h1>
-                <span>Weekly Skydiving forecast by Zooduck</span>
+                <span>7 day skydiving forecast by Zooduck</span>
             </div>
         `, 'text/html').body.firstChild;
 
