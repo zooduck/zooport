@@ -7,6 +7,10 @@ interface ModifierClasses {
     error: string;
 }
 
+interface SetContentOptions {
+    useLoader: boolean;
+}
+
 class HTMLSkyduckWeatherElement extends HTMLElement {
     private _club: string;
     private _container: HTMLElement;
@@ -137,7 +141,7 @@ class HTMLSkyduckWeatherElement extends HTMLElement {
 
             if (!resource) {
                 this._geocodeData = null;
-                throw Error(`Geocode unable to resolve location of ${this.place}`);
+                throw Error(`Geocode unable to resolve location "${this.place}"`);
             }
 
             const coords = resource.geocodePoints[0].coordinates;
@@ -193,7 +197,9 @@ class HTMLSkyduckWeatherElement extends HTMLElement {
         errorNotification.addEventListener('click', () => {
             this._error = '';
             this._container.classList.remove(this._modifierClasses.error);
-            this._setContent();
+            this._setContent({
+                useLoader: false,
+            });
         });
 
         return errorNotification as HTMLElement;
@@ -206,7 +212,7 @@ class HTMLSkyduckWeatherElement extends HTMLElement {
         return styleEl;
     }
 
-    private async _setContent() {
+    private async _setContent(options: SetContentOptions = { useLoader: true }) {
         if (this._error) {
             this._container.classList.add(this._modifierClasses.error);
             this._container.appendChild(this._getErrorNotification());
@@ -214,8 +220,10 @@ class HTMLSkyduckWeatherElement extends HTMLElement {
             return;
         }
 
-        const minLoaderTime = 1000;
-        await this._wait(minLoaderTime);
+        if (options.useLoader) {
+            const minLoaderTime = 1000;
+            await this._wait(minLoaderTime);
+        }
 
         const googleMapsKey = await this._getGoogleMapsKey();
         const weatherElements: WeatherElements = new SkyduckWeatherElements(this._forecast, googleMapsKey, this._searchType);
