@@ -1,6 +1,7 @@
 import { DailyForecast } from './skyduck-weather'; // eslint-disable-line no-unused-vars
 import { iconMap } from './icon-map';
 import '../skyduck-radio/skyduck-radio.component';
+import { DateTime } from 'luxon';
 
 interface DailyData {
     cloudCover: number;
@@ -16,6 +17,7 @@ interface DailyData {
     time: number;
     icon: string;
     summary: string;
+    timezone: string;
     hourly: HourlyData[];
 }
 
@@ -124,10 +126,10 @@ export class SkyduckWeatherElements {
         const days: string[] = this._dailyForecast.weather.daily.data.map((dailyDataItem: DailyData): string => {
             const day = this._buildDayHeader(dailyDataItem);
             const hours = dailyDataItem.hourly.map((hourlyDataItem: HourlyData) => {
-                return this._buildHour(hourlyDataItem);
+                return this._buildHour(hourlyDataItem, this._dailyForecast.weather.timezone);
             });
 
-            return `${day}${hours.join('')}`;
+            return hours.length ? `${day}${hours.join('')}` : '';
         });
 
         return Array.from(this._domParser.parseFromString(days.join(''), 'text/html').body.children);
@@ -154,31 +156,41 @@ export class SkyduckWeatherElements {
         return `
             <div class="skyduck-weather__hourly-data-forecast ${colorModifiers.cloudCover}">
                 <i class="fas fa-cloud"></i>
-                <span>${cloudCover}%</span>
+                <div class="skyduck-weather__hourly-data-forecast-info">
+                    <span>${cloudCover}%</span>
+                </div>
             </div>
 
             <div class="skyduck-weather__hourly-data-forecast ${colorModifiers.visibility}">
                 <i class="fas fa-binoculars"></i>
-                <span>${visibility}</span>
-                <small>miles</small>
+                <div class="skyduck-weather__hourly-data-forecast-info">
+                    <span>${visibility}</span>
+                    <small>miles</small>
+                </div>
             </div>
 
             <div class="skyduck-weather__hourly-data-forecast-wind ${colorModifiers.windGust}">
                 <div class="skyduck-weather__hourly-data-forecast-wind-item">
-                    <i class="fas fa-angle-down"></i>
-                    <span>${windSpeed}</span>
-                    <small>mph</small>
+                    <i class="fas fa-paper-plane"></i>
+                    <div class="skyduck-weather__hourly-data-forecast-info">
+                        <span>${windSpeed}</span>
+                        <small>mph</small>
+                    </div>
                 </div>
                 <div class="skyduck-weather__hourly-data-forecast-wind-item">
-                    <i class="fas fa-chevron-up"></i>
-                    <span>${windGust}</span>
-                    <small>mph</small>
+                    <i class="fas fa-fan"></i>
+                    <div class="skyduck-weather__hourly-data-forecast-info">
+                        <span>${windGust}</span>
+                        <small>mph</small>
+                    </div>
                 </div>
             </div>
 
             <div class="skyduck-weather__hourly-data-forecast ${colorModifiers.precipProbability}">
                 <i class="fas fa-cloud-showers-heavy"></i>
-                <span>${precipProbability}%</span>
+                <div class="skyduck-weather__hourly-data-forecast-info">
+                    <span>${precipProbability}%</span>
+                </div>
             </div>
         `;
     }
@@ -201,7 +213,7 @@ export class SkyduckWeatherElements {
         return iframe as HTMLIFrameElement;
     }
 
-    private _buildHour(hourlyData: HourlyData) {
+    private _buildHour(hourlyData: HourlyData, ianaTimezone: string) {
         const { icon: hourlyDataIcon, cloudCover, windSpeed, windGust, time, precipProbability, visibility } = hourlyData;
         const colorModifiersData: ColorModifiersData = {
             cloudCover,
@@ -214,19 +226,19 @@ export class SkyduckWeatherElements {
         const colorModifiers = this._getColorModifiers(colorModifiersData);
         const iconData = this._getIconData(hourlyDataIcon, cloudCover);
         const icon = iconData.icon;
-        let hour: string|number = new Date(time * 1000).getHours();
+
+        const localTime = DateTime.fromSeconds(time);
+        const timezoneTime = localTime.setZone(ianaTimezone);
+        let hour = timezoneTime.hour;
 
         if (hour.toString().length === 1) {
             hour = `0${hour}`;
         }
 
         const html = `
-            <div class="skyduck-weather__hourly-data-date">
-                <span>${hour}</span>
-            </div>
-
             <div class="skyduck-weather__hourly-data-weather-icon ${iconData.modifier}">
                 <i class="fas fa-${icon}"></i>
+                <span class="skyduck-weather__hourly-data-date">${hour}</span>
             </div>
 
             ${this._buildForecastItems(colorModifiers, cloudCover, windSpeed, windGust, precipProbability, visibility)}

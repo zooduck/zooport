@@ -1,6 +1,7 @@
 import { graphqlConfig } from '../../config/index';
 import { skydiveCentres, SkydiveCentre } from './skydive-centres'; // eslint-disable-line no-unused-vars
 import { darkSkyQuery } from './dark-sky-query';
+import { DateTime } from 'luxon';
 
 export interface DailyForecast {
     weather: {
@@ -17,6 +18,7 @@ export interface DailyForecast {
         }
         latitude: number;
         longitude: number;
+        timezone: string;
         place: string;
         countryRegion?: any;
         site: string;
@@ -81,11 +83,12 @@ export class SkyduckWeather {
         });
     }
 
-    private _formatHourlyData(hourlyData: any) {
+    private _formatHourlyData(hourlyData: any, ianaTimezone: string) {
         return hourlyData.filter((item: any) => {
-            const hours = new Date(item.time * 1000).getHours();
+            const local = DateTime.fromSeconds(item.time);
+            const tz = local.setZone(ianaTimezone);
 
-            return hours === 9 || hours === 12 || hours === 15 || hours === 18;
+            return tz.hour === 9 || tz.hour === 12 || tz.hour === 15;
         }).map((hourlyItem: any) => {
             return {
                 ...hourlyItem,
@@ -116,7 +119,8 @@ export class SkyduckWeather {
 
             const json = await graphqlResult.json();
 
-            this._hourlyData = this._formatHourlyData(json.data.weather.hourly.data);
+            const ianaTimezone = json.data.weather.timezone;
+            this._hourlyData = this._formatHourlyData(json.data.weather.hourly.data, ianaTimezone);
             this._dailyData = this._formatDailyData(json.data.weather.daily.data);
 
             return {
@@ -124,6 +128,7 @@ export class SkyduckWeather {
                     ...skydiveCentre,
                     latitude: json.data.weather.latitude,
                     longitude: json.data.weather.longitude,
+                    timezone: json.data.weather.timezone,
                     daily: {
                         summary: json.data.weather.daily.summary,
                         icon: json.data.weather.daily.icon,

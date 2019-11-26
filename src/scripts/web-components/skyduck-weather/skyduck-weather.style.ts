@@ -4,14 +4,14 @@ export const style = `
 }
 .skyduck-weather {
     display: grid;
-    grid-template-columns: auto 60px repeat(5, 1fr);
-    gap: 5px;
+    grid-template-columns: 70px repeat(5, 1fr);
     place-items: center;
     margin-bottom: 20px;
     background-color: #fff;
     padding: 10px;
     user-select: none;
     min-height: 400px;
+    grid-row-gap: 5px;
 }
 .skyduck-weather a {
     color: cornflowerblue;
@@ -22,7 +22,7 @@ export const style = `
 }
 .skyduck-weather__loader,
 .skyduck-weather__error {
-    grid-column: 1 / span 7;
+    grid-column: 1 / span 6;
     font-size: 62px;
     color: gainsboro;
 }
@@ -45,8 +45,7 @@ export const style = `
     flex-direction: column;
     align-items: center;
     width: 100%;
-    grid-column: 1 / span 7;
-    margin-bottom: 10px;
+    grid-column: 1 / span 6;
 }
 .skyduck-weather__title h1 {
     margin: 0;
@@ -56,21 +55,21 @@ export const style = `
     height: 150px;
     border: 0;
     background-color: rgba(0, 0, 0, .10);
-    grid-column: 1 / span 7;
+    grid-column: 1 / span 6;
 }
 .skyduck-weather__place {
     display: flex;
     flex-direction: column;
     justify-self: left;
     grid-column-start: 1;
-    grid-column-end: span 7;
+    grid-column-end: span 6;
     font-size: 14px;
 }
 .skyduck-weather__place h3 {
     margin: 0;
 }
 .skyduck-weather__search {
-    grid-column: 1 / span 7;
+    grid-column: 1 / span 6;
     width: 100%;
     display: flex;
     margin: 5px 0;
@@ -87,14 +86,14 @@ export const style = `
 .skyduck-weather__footer {
     display: flex;
     justify-content: space-between;
-    grid-column: 1 / span 7;
+    grid-column: 1 / span 6;
     width: 100%;
     margin-top: 20px;
     font-size: 14px;
 }
 .skyduck-weather__daily-data-title {
     display: flex;
-    grid-column: 1 / span 7;
+    grid-column: 1 / span 6;
     width: 100%;
     align-items: center;
 }
@@ -126,8 +125,17 @@ export const style = `
     display: flex;
     flex-direction: column;
     align-items: center;
+    background: #fff;
+    border-radius: 50%;
+    padding: 5px;
+    font-size: 16px;
+    position: absolute;
+    top: -10px;
+    left: -5px;
+    border: solid;
 }
 .skyduck-weather__hourly-data-weather-icon {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -138,6 +146,7 @@ export const style = `
 }
 .skyduck-weather__hourly-data-forecast,
 .skyduck-weather__hourly-data-forecast-wind {
+    position: relative;
     display: flex;
     width: 100%;
     height: 100%;
@@ -152,6 +161,16 @@ export const style = `
     font-size: 28px;
     padding-bottom: 10px;
 }
+.skyduck-weather__hourly-data-forecast-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    color: #222;
+    padding: 6px;
+    height: 50px;
+}
 .skyduck-weather__hourly-data-forecast-wind {
     display: grid;
     grid-column: span 2;
@@ -164,6 +183,7 @@ export const style = `
     justify-content: space-around;
     height: 100%;
 }
+
 .--clear-day {
     color: yellow;
     background-color: lightskyblue;
@@ -181,10 +201,13 @@ export const style = `
 .--cloud-sun-rain,
 .--snow,
 .--wind,
-.--partly-cloudy-day,
-.--cloudy {
+.--partly-cloudy-day {
     color: white;
     background-color: lightskyblue;
+}
+.--cloudy {
+    color: white;
+    background-color: lightgray;
 }
 .--fog {
     color: lightgray;
@@ -198,5 +221,49 @@ export const style = `
 }
 .--red {
     background-color: rgba(255, 0, 0, .45);
+}
+
+.--cloud-sun-rain .skyduck-weather__hourly-data-date,
+.--snow .skyduck-weather__hourly-data-date,
+.--wind .skyduck-weather__hourly-data-date,
+.--partly-cloudy-day .skyduck-weather__hourly-data-date {
+    color: #4d7995;
+    border-color: lightskyblue;
+    background-color: #fff;
+}
+.--rain .skyduck-weather__hourly-data-date,
+.--sleet .skyduck-weather__hourly-data-date,
+.--cloudy .skyduck-weather__hourly-data-date {
+    color: gray;
+    background-color: #fff;
+    border-color: lightgray;
+}
+.--clear-night .skyduck-weather__hourly-data-date,
+.--partly-cloudy-night .skyduck-weather__hourly-data-date {
+    color: gray;
+    background-color: #fff;
+}
+.--clear-day .skyduck-weather__hourly-data-date {
+    color: #4d7995;
+    border-color: lightskyblue;
+    background-color: #fff;
+}
+.--fog .skyduck-weather__hourly-data-date {
+    color: lightgray;
+    border-color: #f5f5f5;
+    background-color: #fff;
+}
+
+.--green .skyduck-weather__hourly-data-forecast-info {
+    background-color: #fff;
+    color: rgb(31, 131, 31);
+}
+.--amber .skyduck-weather__hourly-data-forecast-info {
+    background-color: #fff;
+    color: rgb(158, 102, 0);
+}
+.--red .skyduck-weather__hourly-data-forecast-info {
+    background-color: #fff;
+    color: rgb(238, 0, 0);
 }
 `;

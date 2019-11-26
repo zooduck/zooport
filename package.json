@@ -39,6 +39,7 @@
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
     "graphql": "^14.5.8",
+    "luxon": "^1.21.2",
     "mongodb": "^3.3.3"
   }
 }

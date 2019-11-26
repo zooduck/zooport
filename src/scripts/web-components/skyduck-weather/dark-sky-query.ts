@@ -2,6 +2,7 @@ export const darkSkyQuery = `query DarkskyData($lat: Float!, $lon: Float!) {
     weather(latitude: $lat, longitude: $lon) {
         latitude,
         longitude,
+        timezone,
         daily {
             summary,
             icon,
