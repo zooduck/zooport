@@ -53,12 +53,12 @@ const weather = {
                 _id: 0,
             }
         };
-        const result = await db.collection('weather').findOne(query, options)
+        const result = await db.collection('Weather').findOne(query, options)
             .catch(err => console.log(err));
         if (result) {
             response.status(200).send(JSON.stringify(result));
         } else {
-            response.status(200).send(JSON.stringify({ error: 'Document not found' }));
+            response.status(404).send(JSON.stringify({ error: 'Document not found' }));
         }
     }
 };
@@ -67,10 +67,10 @@ const weatherPost = {
     path: '/weather',
     callback: async (request, response) => {
         const doc = request.body;
-        await db.collection('weather').insertOne(doc)
+        await db.collection('Weather').insertOne(doc)
             .catch(err => console.log(err));
 
-        response.status(200).send(request.body);
+        response.status(200).send(doc);
     }
 };
 
@@ -78,10 +78,27 @@ const weatherPut = {
     path: '/weather',
     callback: async (request, response) =>  {
         const doc = request.body;
-        await db.collection('weather').replaceOne({ club: request.body.club }, doc)
+        const { id, daily, hourly, requestTime } = doc;
+        await db.collection('Weather').updateOne({ id: id }, {
+            $set: {
+                daily,
+                hourly,
+                requestTime,
+            }
+        }).catch(err => console.log(err));
+
+        response.status(200).send(doc);
+    }
+};
+
+const skydiveClubPost = {
+    path: '/skydive_club',
+    callback: async (request, response) => {
+        const doc = request.body;
+        await db.collection('SkydiveClub').insertOne(doc)
             .catch(err => console.log(err));
 
-        response.status(200).send(request.body);
+        response.status(200).send(doc);
     }
 };
 
@@ -95,6 +112,7 @@ const routes = {
     ],
     post: [
         weatherPost,
+        skydiveClubPost,
     ],
     put: [
         weatherPut,

@@ -55,8 +55,8 @@ export const style = `
     --font-weight-base-regular: 300;
     --font-weight-base-bold: 700;
     --font-family-base: 'Roboto', sans-serif;
-    --font-size-title: 42px;
-    --font-size-subtitle: 16px;
+    --font-size-title: 36px;
+    --font-size-subtitle: 14px;
 }
 @media (min-width: 769px) {
     .enter-the-duck {
@@ -69,7 +69,7 @@ export const style = `
     display: block;
     height: calc(var(--font-size-title) * 2);
     height: calc((var(--font-size-title) * 2) + var(--font-size-subtitle) + 40px);
-    padding: 10px;
+    padding: 5px 10px;
     background-color: var(--color-base-black);
     overflow: hidden;
     transition: height var(--animation-duration-base);
@@ -77,7 +77,7 @@ export const style = `
     font-weight: var(--font-weight-base-regular);
 }
 .enter-the-duck__header.--animation-complete {
-    height: calc((var(--font-size-title) * 2) + var(--font-size-subtitle) + 40px);
+    height: calc((var(--font-size-title) * 2) + var(--font-size-subtitle) + 32px);
 }
 .enter-the-duck__console-block {
     display: flex;
@@ -107,7 +107,7 @@ export const style = `
     animation: blink .5s infinite;
 }
 .enter-the-duck__console-block-cursor.--dropped {
-    margin-top: calc(var(--font-size-subtitle) * 1.8);
+    margin-top: calc(var(--font-size-subtitle) * 2);
     transform: rotate(45deg) scale(2.25);
 }
 .enter-the-duck__intro-loading-blocks {

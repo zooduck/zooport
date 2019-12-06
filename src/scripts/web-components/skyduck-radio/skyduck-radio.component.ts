@@ -29,18 +29,6 @@ class SkyduckRadio extends HTMLElement {
         return this._value;
     }
 
-    private _getFontAwesomeLink(): HTMLLinkElement {
-        const link = new DOMParser().parseFromString(`
-            <link
-                rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
-                crossorigin="anonymous"
-                integrity="sha256-+N4/V/SbAFiW1MPBCXnfnP9QSN3+Keu+NlB+0ev/YKQ=">
-        `, 'text/html').head.firstChild;
-
-        return link as HTMLLinkElement;
-    }
-
     private _getStyle(): HTMLStyleElement {
         const style = document.createElement('style');
         style.textContent = `
@@ -49,23 +37,43 @@ class SkyduckRadio extends HTMLElement {
                 grid-template-columns: auto 1fr;
                 align-items: center;
                 gap: 5px;
+                cursor: pointer;
             }
             .zooduck-radio__value {
                 color: #222;
             }
             .zooduck-radio__icon {
-                font-size: 24px;
-                color: #bbb;
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: var(--size, 24px);
+                height: var(--size, 24px);
+                border: solid var(--color, #bbb);
+                border-width: calc(var(--size, 24px) / 8);
+                border-radius: 50%;
             }
             .zooduck-radio__icon.--on {
                 display: none;
+            }
+            .zooduck-radio__icon.--on:before {
+                display: block;
+                content: '';
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                width: 50%;
+                height: 50%;
+                border-radius: 50%;
+                background-color: var(--color, #bbb);
             }
             input[type=radio] {
                 display: none;
             }
             input:checked ~.zooduck-radio__icon.--on,
             input:not(:checked) ~.zooduck-radio__icon.--off {
-                display: block;
+                display: flex;
             }
             input:not(:checked) ~.zooduck-radio__icon.--on,
             input:checked ~.zooduck-radio__icon.--off {
@@ -94,16 +102,13 @@ class SkyduckRadio extends HTMLElement {
         this.innerHTML = '';
 
         const style = this._getStyle();
-        const link = this._getFontAwesomeLink();
-
-        this.appendChild(link);
         this.appendChild(style);
 
         const html = new DOMParser().parseFromString(`
             <label class="zooduck-radio">
                     ${this._buildRawInput().outerHTML}
-                    <i class="zooduck-radio__icon --off far fa-circle"></i>
-                    <i class="zooduck-radio__icon --on far fa-dot-circle"></i>
+                    <i class="zooduck-radio__icon --off"></i>
+                    <i class="zooduck-radio__icon --on"></i>
                     <span class="zooduck-radio__value">${this._value}</span>
             </label>
         `, 'text/html').body.firstChild;

@@ -1,83 +1,233 @@
-import { DailyForecast } from './skyduck-weather'; // eslint-disable-line no-unused-vars
-import { iconMap } from './icon-map';
-import '../skyduck-radio/skyduck-radio.component';
 import { DateTime } from 'luxon';
-
-interface DailyData {
-    cloudCover: number;
-    visibility: number;
-    windSpeed: number;
-    windGust: number;
-    temperatureHigh: number;
-    temperatureLow: number;
-    temperatureAverage: number;
-    apparentTemperatureHigh: number;
-    apparentTemperatureLow: number;
-    apparentTemperatureAverage: number;
-    time: number;
-    icon: string;
-    summary: string;
-    timezone: string;
-    hourly: HourlyData[];
-}
-
-interface HourlyData {
-    cloudCover: number;
-    visibility: number;
-    windSpeed: number;
-    windGust: number;
-    temperature: number;
-    apparentTemperature: number;
-    time: number;
-    icon: string;
-    precipProbability: number;
-}
-
-interface ColorModifiers {
-    cloudCover: string;
-    windSpeed: string;
-    windGust: string;
-    temperature: string;
-    precipProbability: string;
-    visibility: string;
-}
-
-interface ColorModifiersData {
-    cloudCover: number;
-    windSpeed: number;
-    windGust: number;
-    temperature: number;
-    precipProbability: number;
-    visibility: number;
-}
-
-interface IconData {
-    icon: string;
-    modifier: string;
-}
-
-export interface WeatherElements {
-    footer: HTMLElement;
-    map: HTMLIFrameElement;
-    days: Element[];
-    place: HTMLElement;
-    search: HTMLElement;
-    title: HTMLElement;
-}
+import { weatherRatings } from './utils/skyduck-weather-ratings';
+import '../skyduck-radio/skyduck-radio.component';
+import '../skyduck-carousel/skyduck-carousel.component';
+/* eslint-disable */
+import {
+    HourlyData,
+    ColorModifier,
+    ForecastData,
+    ColorModifiersData,
+    ColorModifiers,
+    SearchType,
+    DailyForecast,
+    Rating,
+    Ratings,
+    WeatherImageMap
+} from './interfaces/index';
+import { HTMLSkyduckCarouselElement } from '../skyduck-carousel/skyduck-carousel.component';
+/* eslint-enable */
 
 export class SkyduckWeatherElements {
     private _dailyForecast: DailyForecast;
-    private _date: Date;
     private _defaultSearchType: string;
     private _domParser: DOMParser;
     private _googleMapsKey: string;
+    private _imageMap: WeatherImageMap;
+    private _requestTime: string;
 
-    constructor(dailyForecast: DailyForecast, googleMapsKey: string, defaultSearchType: string) {
+    constructor(
+        dailyForecast: DailyForecast,
+        imageMap: WeatherImageMap,
+        googleMapsKey: string,
+        defaultSearchType: SearchType) {
         this._dailyForecast = dailyForecast;
-        this._date = new Date(dailyForecast.weather.requestTime);
+        this._requestTime = DateTime
+            .fromMillis(dailyForecast.weather.requestTime)
+            .toLocaleString(DateTime.DATETIME_SHORT)
+            .replace(',', '');
         this._defaultSearchType = defaultSearchType;
         this._domParser = new DOMParser();
         this._googleMapsKey = googleMapsKey;
+        this._imageMap = imageMap;
+    }
+
+    private _buildFooter(): HTMLElement {
+        const footer = this._domParser.parseFromString(`
+            <div class="footer">
+                <span>${this._requestTime}</span>
+                <a href="https://darksky.net/poweredby/" target="_blank">Powered by Dark Sky</a>
+            </div>
+        `, 'text/html').body.firstChild;
+
+        return footer as HTMLElement;
+    }
+
+    private _buildForecastCarousel(): HTMLSkyduckCarouselElement {
+        const carousel = document.createElement('skyduck-carousel');
+
+        const forecastSlides = this._dailyForecast.weather.daily.data.filter((dailyData) => {
+            return dailyData.hourly.length;
+        }).map((dailyData) => {
+            return this._buildForecast(dailyData);
+        });
+
+        const slot = document.createElement('div');
+        slot.setAttribute('slot', 'slides');
+
+        forecastSlides.forEach((slide) => {
+            slot.appendChild(slide);
+        });
+
+        carousel.appendChild(slot);
+
+        return carousel as HTMLSkyduckCarouselElement;
+    }
+
+    private _buildForecastHour(hourlyData: HourlyData): string {
+        const {
+            timeString,
+            icon,
+            summary,
+            temperature,
+            precipType,
+            precipProbability,
+            cloudCover,
+            windGust,
+        } = hourlyData;
+
+        const weatherImagePath = this._imageMap[icon] || this._imageMap.default;
+        const colorModifiers = this._getColorModifiers(hourlyData);
+
+        const forecastHour = `
+            <div class="forecast-grid-forecast">
+                <div class="forecast-grid-forecast__weather-photo" style="background-image: url('${weatherImagePath}')"></div>
+
+                <h2 class="forecast-grid-forecast__time">${timeString}</h2>
+
+                <div class="forecast-grid-forecast-weather">
+                    <h4 class="forecast-grid-forecast-weather__type">${summary}</h4>
+                    <h2 class="forecast-grid-forecast-weather__temperature">${temperature}&deg;</h2>
+                </div>
+
+                <div class="forecast-data-grid">
+                    <div class="forecast-data-grid__type ${colorModifiers.cloudCover}">
+                        <i class="icon-circle ${colorModifiers.cloudCover}"></i>
+                        <span>cloud</span>
+                    </div>
+                    <div class="forecast-data-grid__type ${colorModifiers.windGust}">
+                        <i class="icon-circle ${colorModifiers.windGust}"></i>
+                        <span>wind</span>
+                    </div>
+                    <div class="forecast-data-grid__type ${colorModifiers.precipProbability}">
+                        <i class="icon-circle ${colorModifiers.precipProbability}"></i>
+                        <span>${precipType || 'rain'}</span>
+                    </div>
+
+                    <div class="forecast-data-grid__data ${colorModifiers.cloudCover}">${cloudCover}%</div>
+                    <div class="forecast-data-grid__data ${colorModifiers.windGust}">
+                        <span>${windGust}</span>
+                        <small>mph</small>
+                    </div>
+                    <div class="forecast-data-grid__data ${colorModifiers.precipProbability}">${precipProbability}%</div>
+                </div>
+            </div>
+        `;
+
+        return forecastHour;
+    }
+
+    private _buildForecast(dayForecast: ForecastData): HTMLElement {
+        const {
+            day,
+            dateString,
+            summary,
+            sunriseTimeString,
+            sunsetTimeString,
+            hourly,
+        } = dayForecast;
+
+        const hours = hourly.map((hour: HourlyData) => {
+            return this._buildForecastHour(hour);
+        });
+
+        const averageRatingModifier = this._getAverageRatingModifier(hourly);
+
+        const forecast = this._domParser.parseFromString(`
+            <div class="forecast-grid">
+                <div class="forecast-grid-header ${averageRatingModifier}">
+                    <div class="forecast-grid-header-date">
+                        <h2>${day}</h2>
+                        <h1 class="forecast-grid-header-date__date-string">${dateString}</h1>
+                    </div>
+                    <span class="forecast-grid-header__summary">${summary}</span>
+                    <div class="forecast-grid-header-sun-info">
+                        <h3 class="forecast-grid-header-sun-info__item">Rise: ${sunriseTimeString}</h3>
+                        <h3 class="forecast-grid-header-sun-info__item --sunset">Set: ${sunsetTimeString}</h3>
+                    </div>
+                </div>
+                ${hours.join('')}
+            </div>
+        `, 'text/html').body.firstChild;
+
+        return forecast as HTMLElement;
+    }
+
+    private _buildGoogleMap(): HTMLIFrameElement {
+        const params = {
+            key: this._googleMapsKey,
+            q: this._dailyForecast.club.place,
+            zoom: '8',
+            center: `${this._dailyForecast.weather.latitude},${this._dailyForecast.weather.longitude}`,
+            maptype: 'roadmap',
+        };
+        const queryString = new URLSearchParams(params).toString();
+        const url = `https://google.com/maps/embed/v1/place?${queryString}`;
+        const iframe = this._domParser.parseFromString(
+            `<iframe src="${url}" frameborder="0" class="club-info-grid__map"></iframe>
+        `, 'text/html').body.firstChild;
+
+        return iframe as HTMLIFrameElement;
+    }
+
+    private _buildLocationInfo(): HTMLElement {
+        const locationInfo = document.createElement('div');
+        locationInfo.className = 'club-info-grid';
+        locationInfo.appendChild(this._buildGoogleMap());
+        locationInfo.appendChild(this._buildPlace());
+
+        return locationInfo;
+    }
+
+    private _buildPlace(): HTMLElement {
+        const { countryRegion, club } = this._dailyForecast;
+        const place = countryRegion ? club.place.concat(',').concat(countryRegion) : club.place;
+        const site = club.site
+            ? `<a class="club-info-grid__site-link" href="${club.site}" target="_blank">${club.site.replace(/https?:\/+/, '')}</a>`
+            : '';
+        const placeEl = this._domParser.parseFromString(`
+            <div class="club-info-grid__location-info">
+                ${this._formatPlace(place)}
+                ${site}
+            </div>
+        `, 'text/html').body.firstChild;
+
+        return placeEl as HTMLElement;
+    }
+
+    private _buildSearch(): HTMLElement {
+        const search = this._domParser.parseFromString(`
+            <div class="search">
+                <zooduck-input label="Search" placeholder="e.g. skydive spain, netheravon..."></zooduck-input>
+                <form class="search__radios">
+                    <skyduck-radio name="searchType" value="club" ${this._defaultSearchType === 'club' ? 'checked' : ''}></skyduck-radio>
+                    <skyduck-radio name="searchType" value="location" ${this._defaultSearchType === 'location' ? 'checked' : ''}></skyduck-radio>
+                </form>
+            </div>
+        `, 'text/html').body.firstChild;
+
+        return search as HTMLElement;
+    }
+
+    private _buildTitle(): HTMLElement {
+        const title = this._domParser.parseFromString(`
+            <div class="title">
+                <h1>Skyduck Weather</h1>
+                <span>7 day skydiving forecast by Zooduck</span>
+            </div>
+        `, 'text/html').body.firstChild;
+
+        return title as HTMLElement;
     }
 
     private _formatPlace(place: string): string {
@@ -100,272 +250,41 @@ export class SkyduckWeatherElements {
         return html.join('');
     }
 
-    private _buildDayHeader(dailyData: DailyData): string {
-        const { icon: dailyDataIcon, cloudCover, time, summary } = dailyData;
-        const iconData = this._getIconData(dailyDataIcon, cloudCover);
-        const date = new Date(time * 1000).toLocaleDateString().substr(0, 5);
-        const day = new Date(time * 1000).toDateString().substr(0, 3);
+    private _getAverageRatingModifier(hourlyForecasts: HourlyData[]): ColorModifier {
+        const hourlyRatings = hourlyForecasts.map((hour: HourlyData): Rating[] => {
+            const { cloudCover, windGust } = hour;
 
-        const dayHeaderTitle = `
-            <div class="skyduck-weather__daily-data-title ${iconData.modifier}">
-                <div class="skyduck-weather__daily-data-title-icon">
-                    <i class="far fa-circle"></i>
-                </div>
-                <h3 class="skyduck-weather__daily-data-title-date">${day} ${date}</h3>
-                <span class="skyduck-weather__daily-data-title-summary">${summary.replace(/\.$/, '')}</span>
-                <div class="skyduck-weather__daily-data-title-temperature">
-                    <span>${dailyData.temperatureAverage}&deg;</span>
-                </div>
-            </div>
-        `;
-
-        return dayHeaderTitle;
-    }
-
-    private _buildDays(): Element[] {
-        const days: string[] = this._dailyForecast.weather.daily.data.map((dailyDataItem: DailyData): string => {
-            const day = this._buildDayHeader(dailyDataItem);
-            const hours = dailyDataItem.hourly.map((hourlyDataItem: HourlyData) => {
-                return this._buildHour(hourlyDataItem, this._dailyForecast.weather.timezone);
-            });
-
-            return hours.length ? `${day}${hours.join('')}` : '';
+            return [
+                weatherRatings.cloudCover(cloudCover),
+                weatherRatings.windGust(windGust),
+            ];
         });
+        const hourlyRatingsFlattened = hourlyRatings.toString().split(',') as Ratings;
+        const averageRatingModifier = `--${weatherRatings.average(hourlyRatingsFlattened)}` as ColorModifier;
 
-        return Array.from(this._domParser.parseFromString(days.join(''), 'text/html').body.children);
-    }
-
-    private _buildFooter(): HTMLElement {
-        const footer = this._domParser.parseFromString(`
-            <div class="skyduck-weather__footer">
-                <span>${this._date.toLocaleDateString()} ${this._date.toLocaleTimeString()}</span>
-                <a href="https://darksky.net/poweredby/" target="_blank">Powered by Dark Sky</a>
-            </div>
-        `, 'text/html').body.firstChild;
-
-        return footer as HTMLElement;
-    }
-
-    private _buildForecastItems(
-        colorModifiers: ColorModifiers,
-        cloudCover: number,
-        windSpeed: number,
-        windGust: number,
-        precipProbability: number,
-        visibility: number): string {
-        return `
-            <div class="skyduck-weather__hourly-data-forecast ${colorModifiers.cloudCover}">
-                <i class="fas fa-cloud"></i>
-                <div class="skyduck-weather__hourly-data-forecast-info">
-                    <span>${cloudCover}%</span>
-                </div>
-            </div>
-
-            <div class="skyduck-weather__hourly-data-forecast ${colorModifiers.visibility}">
-                <i class="fas fa-binoculars"></i>
-                <div class="skyduck-weather__hourly-data-forecast-info">
-                    <span>${visibility}</span>
-                    <small>miles</small>
-                </div>
-            </div>
-
-            <div class="skyduck-weather__hourly-data-forecast-wind ${colorModifiers.windGust}">
-                <div class="skyduck-weather__hourly-data-forecast-wind-item">
-                    <i class="fas fa-paper-plane"></i>
-                    <div class="skyduck-weather__hourly-data-forecast-info">
-                        <span>${windSpeed}</span>
-                        <small>mph</small>
-                    </div>
-                </div>
-                <div class="skyduck-weather__hourly-data-forecast-wind-item">
-                    <i class="fas fa-fan"></i>
-                    <div class="skyduck-weather__hourly-data-forecast-info">
-                        <span>${windGust}</span>
-                        <small>mph</small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="skyduck-weather__hourly-data-forecast ${colorModifiers.precipProbability}">
-                <i class="fas fa-cloud-showers-heavy"></i>
-                <div class="skyduck-weather__hourly-data-forecast-info">
-                    <span>${precipProbability}%</span>
-                </div>
-            </div>
-        `;
-    }
-
-    private _buildGoogleMap(): HTMLIFrameElement {
-        const params = {
-            key: this._googleMapsKey,
-            q: this._dailyForecast.weather.place,
-            zoom: '8',
-            center: `${this._dailyForecast.weather.latitude},${this._dailyForecast.weather.longitude}`,
-            maptype: 'roadmap',
-        };
-        const queryString = new URLSearchParams(params).toString();
-        const url = `https://google.com/maps/embed/v1/place?${queryString}`;
-
-        const iframe = this._domParser.parseFromString(
-            `<iframe src="${url}" frameborder="0" class="skyduck-weather__map"></iframe>
-        `, 'text/html').body.firstChild;
-
-        return iframe as HTMLIFrameElement;
-    }
-
-    private _buildHour(hourlyData: HourlyData, ianaTimezone: string) {
-        const { icon: hourlyDataIcon, cloudCover, windSpeed, windGust, time, precipProbability, visibility } = hourlyData;
-        const colorModifiersData: ColorModifiersData = {
-            cloudCover,
-            windSpeed,
-            windGust,
-            temperature: hourlyData.apparentTemperature,
-            precipProbability,
-            visibility,
-        };
-        const colorModifiers = this._getColorModifiers(colorModifiersData);
-        const iconData = this._getIconData(hourlyDataIcon, cloudCover);
-        const icon = iconData.icon;
-
-        const localTime = DateTime.fromSeconds(time);
-        const timezoneTime = localTime.setZone(ianaTimezone);
-        let hour = timezoneTime.hour;
-
-        if (hour.toString().length === 1) {
-            hour = `0${hour}`;
-        }
-
-        const html = `
-            <div class="skyduck-weather__hourly-data-weather-icon ${iconData.modifier}">
-                <i class="fas fa-${icon}"></i>
-                <span class="skyduck-weather__hourly-data-date">${hour}</span>
-            </div>
-
-            ${this._buildForecastItems(colorModifiers, cloudCover, windSpeed, windGust, precipProbability, visibility)}
-        `;
-
-        return html;
-    }
-
-    private _buildPlace(): HTMLElement {
-        const weather = this._dailyForecast.weather;
-        const place = weather.countryRegion ? weather.place.concat(',').concat(weather.countryRegion) : weather.place;
-
-        const placeEl = this._domParser.parseFromString(`
-            <div class="skyduck-weather__place">
-                ${this._formatPlace(place)}
-                <br>
-                <a href="${weather.site}" target="_blank">${weather.site.replace(/https?:\/+/, '')}</a>
-            </div>
-        `, 'text/html').body.firstChild;
-
-        return placeEl as HTMLElement;
-    }
-
-    private _buildSearch(): HTMLElement {
-        const search = this._domParser.parseFromString(`
-            <div class="skyduck-weather__search">
-                <zooduck-input class="skyduck-weather__search-input" label="Search">
-                    <i slot="left-icon" class="fas fa-map-marked-alt"></i>
-                </zooduck-input>
-                <form class="skyduck-weather__search-radios">
-                    <skyduck-radio name="searchType" value="club" ${this._defaultSearchType === 'club' ? 'checked' : ''}></skyduck-radio>
-                    <skyduck-radio name="searchType" value="location" ${this._defaultSearchType === 'location' ? 'checked' : ''}></skyduck-radio>
-                </form>
-            </div>
-        `, 'text/html').body.firstChild;
-
-        return search as HTMLElement;
-    }
-
-    private _buildTitle(): HTMLElement {
-        const title = this._domParser.parseFromString(`
-            <div class="skyduck-weather__title">
-                <h1>Skyduck Weather</h1>
-                <span>7 day skydiving forecast by Zooduck</span>
-            </div>
-        `, 'text/html').body.firstChild;
-
-        return title as HTMLElement;
+        return averageRatingModifier;
     }
 
     private _getColorModifiers(colorModifiersData: ColorModifiersData): ColorModifiers {
         return {
-            cloudCover: `--${this._rateCloudCover(colorModifiersData.cloudCover)}`,
-            windSpeed: `--${this._rateWindSpeed(colorModifiersData.windSpeed)}`,
-            windGust: `--${this._rateWindGust(colorModifiersData.windGust)}`,
-            temperature: `--${this._rateTemperature(colorModifiersData.temperature)}`,
-            precipProbability: `--${this._ratePrecipProbability(colorModifiersData.precipProbability)}`,
-            visibility: `--${this._rateVisibility(colorModifiersData.visibility)}`,
+            cloudCover: `--${weatherRatings.cloudCover(colorModifiersData.cloudCover)}` as ColorModifier,
+            windSpeed: `--${weatherRatings.windSpeed(colorModifiersData.windSpeed)}` as ColorModifier,
+            windGust: `--${weatherRatings.windGust(colorModifiersData.windGust)}` as ColorModifier,
+            precipProbability: `--${weatherRatings.precipProbability(colorModifiersData.precipProbability)}` as ColorModifier,
+            visibility: `--${weatherRatings.visibility(colorModifiersData.visibility)}` as ColorModifier,
         };
     }
 
-    private _getIconData(icon: string, cloudCover: number): IconData {
-        if (icon === 'rain' && cloudCover <= 30) {
-            return iconMap['cloud-sun-rain'] || iconMap.default;
-        }
-
-        return iconMap[icon] || iconMap.default;
+    public get locationInfo(): HTMLElement {
+        return this._buildLocationInfo();
     }
 
-    private _rateCloudCover(cloudCover: number): 'green'|'amber'|'red' {
-        return cloudCover <= 25
-            ? 'green'
-            : cloudCover <= 50
-                ? 'amber'
-                : 'red';
-    }
-
-    private _rateWindSpeed(windSpeed: number): 'green'|'amber'|'red' {
-        return windSpeed <= 10
-            ? 'green'
-            : windSpeed <= 20
-                ? 'amber'
-                : 'red';
-    }
-
-    private _rateWindGust(windGust: number): 'green'|'amber'|'red' {
-        return this._rateWindSpeed(windGust);
-    }
-
-    private _rateTemperature(temperature: number): 'green'|'amber'|'red' {
-        return temperature >= 15
-            ? 'green'
-            : temperature >= 10
-                ? 'amber'
-                : 'red';
-    }
-
-    private _ratePrecipProbability(precipProbability: number): 'green'|'amber'|'red' {
-        return precipProbability <= 20
-            ? 'green'
-            : precipProbability <= 50
-                ? 'amber'
-                : 'red';
-    }
-
-    private _rateVisibility(visibility: number): 'green'|'amber'|'red' {
-        return visibility >= 5
-            ? 'green'
-            : visibility >= 3
-                ? 'amber'
-                : 'red';
+    public get forecast(): HTMLElement {
+        return this._buildForecastCarousel();
     }
 
     public get footer(): HTMLElement {
         return this._buildFooter();
-    }
-
-    public get map(): HTMLIFrameElement {
-        return this._buildGoogleMap();
-    }
-
-    public get days(): Element[] {
-        return this._buildDays();
-    }
-
-    public get place(): HTMLElement {
-        return this._buildPlace();
     }
 
     public get search(): HTMLElement {

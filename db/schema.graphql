@@ -24,6 +24,7 @@ type DarkSkyDataHourlyData {
     summary: String,
     icon: String,
     precipIntensity: Float,
+    precipType: String,
     precipProbability: Float,
     temperature: Float,
     apparentTemperature: Float,
@@ -81,6 +82,15 @@ type DarkSkyDataDailyData {
     windSpeed: Float,
 }
 
+type SkydiveClub {
+    id: String,
+    name: String,
+    place: String,
+    latitude: Float,
+    longitude: Float,
+    site: String,
+}
+
 type Animal {
     id: Int,
     name: String,
@@ -90,5 +100,6 @@ type Animal {
 type Query {
     animal(id: Int!): Animal,
     animals(size: String): [Animal],
-    weather(latitude: Float, longitude: Float): DarkSkyData,
+    weather(latitude: Float!, longitude: Float!): DarkSkyData,
+    club(name: String!): SkydiveClub,
 }

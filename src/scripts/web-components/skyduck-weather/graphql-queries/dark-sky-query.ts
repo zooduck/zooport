@@ -8,6 +8,8 @@ export const darkSkyQuery = `query DarkskyData($lat: Float!, $lon: Float!) {
             icon,
             data {
                 time,
+                sunriseTime,
+                sunsetTime,
                 summary,
                 icon,
                 precipProbability,
@@ -30,6 +32,7 @@ export const darkSkyQuery = `query DarkskyData($lat: Float!, $lon: Float!) {
                 summary,
                 icon,
                 precipProbability,
+                precipType,
                 temperature,
                 apparentTemperature,
                 humidity,

@@ -29,7 +29,40 @@ const loadIntro = async () => {
     // });
 };
 
-loadIntro();
+loadIntro().then(() => {
+    window.addEventListener('scroll', () => {
+        const zooport = document.querySelector('#zooport');
+        if (window.scrollY > 99) {
+            zooport.classList.add('--no-header');
+        } else {
+            zooport.classList.remove('--no-header');
+        }
+    });
+});
+
+// const initSkydiveClub = async (data) => {
+//         const method = 'POST';
+
+//         const result = await fetch('/skydive_club', {
+//             method,
+//             headers: {
+//                 'Content-type': 'application/json'
+//             },
+//             body: JSON.stringify(data),
+//         });
+
+//         if (!result.ok) {
+//             throw new Error(`${result.status} (${result.statusText})`);
+//         }
+
+//         return result;
+// };
+
+// skydiveClubs.forEach((item, index) => {
+//     initSkydiveClub(item);
+// });
+
+
 
 // Test GraphQL + MongoDB
 const getAnimals = (size?: string) => {
