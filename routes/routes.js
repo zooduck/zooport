@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 require('dotenv').config();
 const axios = require('axios');
+const fs = require('fs');
 
 let db;
 
@@ -38,7 +39,9 @@ const googleMapsKey = {
 const version = {
     path: '/version',
     callback: (_request, response) => {
-        response.status(200).send(process.env.VERSION);
+        const packageJson = fs.readFileSync('./package.json', 'utf-8');
+        const { version } = JSON.parse(packageJson);
+        response.status(200).send(version.replace(/-.*/, ''));
     }
 };
 
